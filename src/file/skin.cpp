@@ -5,8 +5,8 @@ void Skin::run()
     if (name.isEmpty())
         return;
 
-    //if (!path.isEmpty())
-    //    name = path;
+    if (!path.isEmpty())
+        name = path;
 
     QFile file(name);
     if (file.open(QIODevice::ReadWrite))
