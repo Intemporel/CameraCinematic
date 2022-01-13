@@ -5,6 +5,12 @@
 #include <QDebug>
 #include <windows.h>
 
+enum AXES {
+    X,
+    Y,
+    Z
+};
+
 class Process : public QThread
 {
     Q_OBJECT
@@ -44,14 +50,14 @@ public:
                    float r, bool applyRotation,
                    float origin[3], bool applyOffset) {
 
-        float ret = (applyOffset) ? cam[n]-origin[n] : cam[n];
-        float offX = cam[0] - origin[0];
-        float offZ = cam[2] - origin[2];
+        float ret = (applyOffset) ? cam[n] - origin[n] : cam[n];
+        float offX = cam[X] - origin[X];
+        float offY = cam[Y] - origin[Y];
 
         switch(n)
         {
-            case 0: if ( applyRotation ) ret = (ret*cos(r)-offZ*sin(r)); break;
-            case 2: if ( applyRotation ) ret = (offX*sin(r)+ret*cos(r)); break;
+            case X: if ( applyRotation ) ret = (ret*cos(r)-offY*sin(r)); break;
+            case Y: if ( applyRotation ) ret = (offX*sin(r)+ret*cos(r)); break;
         }
 
         return ret;

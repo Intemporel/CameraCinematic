@@ -38,9 +38,9 @@ CameraCinematic::CameraCinematic(QWidget *parent)
         int vec = ui->vectorList->currentIndex();
 
         QTableWidgetItem* itemX = selectedTable->item(row, 1+(vec*3));
-        QTableWidgetItem* itemZ = selectedTable->item(row, 3+(vec*3));
+        QTableWidgetItem* itemY = selectedTable->item(row, 2+(vec*3));
 
-        applyItemOrientation(itemX, itemZ);
+        applyItemOrientation(itemX, itemY);
     });
     connect(ui->applyOrientation, &QPushButton::clicked, [=]() {
         int row = ui->rowList->currentIndex();
@@ -425,13 +425,13 @@ void CameraCinematic::updateVectorList()
         ui->vectorList->addItem("Vec1");
 }
 
-void CameraCinematic::applyItemOrientation(QTableWidgetItem * itemX, QTableWidgetItem* itemZ)
+void CameraCinematic::applyItemOrientation(QTableWidgetItem * itemX, QTableWidgetItem* itemY)
 {
     float valX = itemX->text().toFloat();
-    float valZ = itemZ->text().toFloat();
+    float valY = itemY->text().toFloat();
 
-    itemX->setText(QString::number( (valX*cos(facing)-valZ*sin(facing)) ));
-    itemZ->setText(QString::number( (valX*sin(facing)+valZ*cos(facing)) ));
+    itemX->setText(QString::number( (valX*cos(facing)-valY*sin(facing)) ));
+    itemY->setText(QString::number( (valX*sin(facing)+valY*cos(facing)) ));
 }
 
 void CameraCinematic::applyItemOffset(QVector<QTableWidgetItem*> items)
