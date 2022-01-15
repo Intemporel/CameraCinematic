@@ -10,7 +10,7 @@ CameraCinematic::CameraCinematic(QWidget *parent)
     , ui(new Ui::CameraCinematic)
 {
     ui->setupUi(this);
-    ui->vectors->setCurrentIndex(0);
+    ui->tab->setCurrentIndex(0);
     selectedTable = ui->pos_table;
 
     ui->pos_interpolation->setCurrentIndex(1);
@@ -22,7 +22,7 @@ CameraCinematic::CameraCinematic(QWidget *parent)
 
     connect(ui->addVect, &QPushButton::clicked, [=]() {addRow();});
     connect(ui->removeVect, &QPushButton::clicked, [=]() {removeRow();});
-    connect(ui->vectors, &QTabWidget::currentChanged, [=](int c) {
+    connect(ui->tab, &QTabWidget::currentChanged, [=](int c) {
         switch (c) {
         case 0: selectedTable = ui->pos_table; break;
         case 1: selectedTable = ui->tar_table; break;
@@ -57,6 +57,16 @@ CameraCinematic::CameraCinematic(QWidget *parent)
     connect(ui->generate, &QPushButton::clicked, [=]() {generateFile();});
     connect(ui->editName, &QLineEdit::textChanged, [=]() {updateModelInfo();});
     connect(ui->editAnimationLength, &QLineEdit::textChanged, [=]() {updateModelInfo();});
+
+    connect(ui->pos_table, &QTableWidget::itemSelectionChanged, [=]() {sendVectors();});
+    connect(ui->tar_table, &QTableWidget::itemSelectionChanged, [=]() {sendVectors();});
+    connect(ui->roll_table, &QTableWidget::itemSelectionChanged, [=]() {sendVectors();});
+
+    connect(ui->showPositions, &QCheckBox::stateChanged, [=]() {sendVectors();});
+    connect(ui->showTargets, &QCheckBox::stateChanged, [=]() {sendVectors();});
+    connect(ui->showRolls, &QCheckBox::stateChanged, [=]() {sendVectors();});
+
+    connect(ui->displayAxe, &QComboBox::currentIndexChanged, [=](int index) {ui->graphicsView->changeDisplay(index); sendVectors();});
 
     connect(ui->pos_interpolation, &QComboBox::currentIndexChanged, [=](int index) {interpolation[0] = (quint16)index;});
     connect(ui->tar_interpolation, &QComboBox::currentIndexChanged, [=](int index) {interpolation[1] = (quint16)index;});
@@ -121,11 +131,15 @@ CameraCinematic::CameraCinematic(QWidget *parent)
                                                 tr("Model Files (*.m2 *.mdx)"));
 
 
-        QString skinPath = modelPath;
-        camSkin.setPath(skinPath.replace(".m2", "00.skin"));
-        camModel.setPath(modelPath);
-        camModel.read();
-        updateRowList();
+        if ( !modelPath.isEmpty() )
+        {
+            QString skinPath = modelPath;
+            camSkin.setPath(skinPath.replace(".m2", "00.skin"));
+            camModel.setPath(modelPath);
+            camModel.read();
+            updateRowList();
+            sendVectors();
+        }
     });
 
     updateDBC();
@@ -151,6 +165,7 @@ void CameraCinematic::addRow()
     }
 
     updateRowList();
+    sendVectors();
 }
 
 void CameraCinematic::removeRow()
@@ -164,6 +179,7 @@ void CameraCinematic::removeRow()
         selectedTable->removeRow(item->row());
 
     updateRowList();
+    sendVectors();
 }
 
 void CameraCinematic::updateModelInfo()
@@ -185,6 +201,9 @@ void CameraCinematic::updateDBCInfo(bool check)
                 ui->dbcCameraList->setCurrentIndex(i);
 
     QVector<float> dbcValues = dbcCinematicCamera.getVectorByID(dbcList[ui->dbcCameraList->currentIndex()]);
+
+    if (dbcValues.isEmpty())
+        return;
 
     origin[0] = dbcValues[0];
     origin[1] = dbcValues[1];
@@ -306,21 +325,11 @@ void CameraCinematic::m2FileRead()
     ui->roll_interpolation->setCurrentIndex(interpolation[2]);
 
     updateModelInfo();
+    ui->graphicsView->clear();
 
-    ui->pos_table->selectAll();
-    for (QTableWidgetItem* item : ui->pos_table->selectedItems())
-        if ( item )
-            ui->pos_table->removeRow(item->row());
-
-    ui->tar_table->selectAll();
-    for (QTableWidgetItem* item : ui->tar_table->selectedItems())
-        if ( item )
-            ui->tar_table->removeRow(item->row());
-
-    ui->roll_table->selectAll();
-    for (QTableWidgetItem* item : ui->roll_table->selectedItems())
-        if ( item )
-            ui->roll_table->removeRow(item->row());
+    ui->pos_table->setRowCount(0);
+    ui->tar_table->setRowCount(0);
+    ui->roll_table->setRowCount(0);
 
     std::vector<timestampedValue<VecF<9>>> positions = camModel.getPositions();
     std::vector<timestampedValue<VecF<9>>> targets = camModel.getTargets();
@@ -380,6 +389,68 @@ void CameraCinematic::m2FileRead()
 void CameraCinematic::m2FileUpdate()
 { ui->output->append("Success: m2 file is updated"); }
 
+void CameraCinematic::sendVectors()
+{    
+    QVector<QVector<QVector<float>>> pos;
+    QVector<QVector<QVector<float>>> tar;
+    QVector<QVector<QVector<float>>> roll;
+
+    for (int row = 0; row < ui->pos_table->rowCount(); ++row)
+    {
+        QVector<QVector<float>> f;
+        pos.push_back(f);
+
+        for (int vec = 0; vec < 3; ++vec)
+        {
+            QVector<float> f;
+            pos[row].push_back(f);
+
+            for (int i = 0; i < 3; ++i)
+            {
+                pos[row][vec].push_back( ui->pos_table->item(row, 1 + (vec * 3) + i)->text().toFloat() );
+            }
+        }
+    }
+
+    for (int row = 0; row < ui->tar_table->rowCount(); ++row)
+    {
+        QVector<QVector<float>> f;
+        tar.push_back(f);
+
+        for (int vec = 0; vec < 3; ++vec)
+        {
+            QVector<float> f;
+            tar[row].push_back(f);
+
+            for (int i = 0; i < 3; ++i)
+            {
+                tar[row][vec].push_back( ui->tar_table->item(row, 1 + (vec * 3) + i)->text().toFloat() );
+            }
+        }
+    }
+
+    for (int row = 0; row < ui->roll_table->rowCount(); ++row)
+    {
+        QVector<QVector<float>> f;
+        QVector<float> g;
+        roll.push_back(f);
+        roll[row].push_back(g);
+
+        for (int i = 0; i < 3; ++i)
+        {
+            tar[row][0].push_back( ui->roll_table->item(row, 1 + i)->text().toFloat() );
+        }
+    }
+
+    bool show[3] = {
+        ui->showPositions->isChecked(),
+        ui->showTargets->isChecked(),
+        ui->showRolls->isChecked()
+    };
+
+    ui->graphicsView->setVectors(interpolation, show, pos, tar, roll);
+}
+
 void CameraCinematic::updateDBC()
 {
     if ( !dbcCinematicCamera.dbcExist() )
@@ -413,12 +484,15 @@ void CameraCinematic::updateRowList()
     ui->rowList->clear();
     for (int i = 0; i < selectedTable->rowCount(); ++i)
         ui->rowList->addItem(QString::number(i+1));
+
+    if ( ui->rowList->count() > 0 )
+        ui->rowList->setCurrentIndex(ui->rowList->count()-1);
 }
 
 void CameraCinematic::updateVectorList()
 {
     ui->vectorList->clear();
-    if ( ui->vectors->currentIndex() < 2 )
+    if ( ui->tab->currentIndex() < 2 )
         for (int n = 0; n < 3 ; ++n)
             ui->vectorList->addItem(QString("Vec%1").arg(n+1));
     else

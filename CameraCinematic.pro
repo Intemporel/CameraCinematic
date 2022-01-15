@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,13 +12,19 @@ SOURCES += \
     main.cpp \
     src/cameracinematic.cpp \
     src/file/m2.cpp \
-    src/file/skin.cpp
+    src/file/skin.cpp \
+    src/graph/scene.cpp \
+    src/graph/vect2d.cpp \
+    src/graph/view.cpp
 
 HEADERS += \
     src/cameracinematic.h \
     src/file/DBCReader.h \
     src/file/m2.h \
     src/file/skin.h \
+    src/graph/scene.h \
+    src/graph/vect2d.h \
+    src/graph/view.h \
     src/process.h
 
 FORMS += \

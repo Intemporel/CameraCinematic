@@ -9,6 +9,7 @@
 #include <QMainWindow>
 #include <QTableWidget>
 #include <QIntValidator>
+#include <QGraphicsScene>
 #include <QFileDialog>
 #include <QtMath>
 
@@ -50,6 +51,7 @@ private:
     std::uint32_t animationLength = 0;
     std::uint16_t interpolation[3] = {0x0001,0x0001,0x0001};
 
+    void sendVectors();
     void updateDBC();
     void updateRowList();
     void updateVectorList();
