@@ -11,8 +11,6 @@ View::View(QObject* object)
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setMouseTracking(true);
 
-    //setMaximumSize()
-
     scene = new Scene();
     setScene(scene);
     scale(1, -1);
@@ -48,32 +46,86 @@ void View::changeDisplay(int index)
     }
 }
 
-void View::setVectors(uint16_t inter[3], bool show[3], QVector<QVector<QVector<float> > > pos, QVector<QVector<QVector<float> > > tar, QVector<QVector<QVector<float> > > roll)
+void View::setVectors(std::uint16_t inter[3], bool show[2], QVector<QVector<QVector<float> > > pos, QVector<QVector<QVector<float> > > tar/*, QVector<QVector<QVector<float> > > roll*/)
 {
     scene->clear();
+
+    positions = pos;
+    targets = tar;
+    //rolls = roll;
 
     if ( show[0] )
     {
         for (int row = 0; row < pos.size(); ++row)
             for (int vec = 0; vec < pos[row].size(); ++vec)
-                scene->createVector(row, VectorType::POSITION, static_cast<VectorPos>(vec), pos[row][vec]);
+                scene->createVector(row, VectorType::POSITION, static_cast<VectorPos>(vec), pos[row][vec], inter[0]);
     }
 
     if ( show[1] )
     {
         for (int row = 0; row < tar.size(); ++row)
             for (int vec = 0; vec < tar[row].size(); ++vec)
-                scene->createVector(row, VectorType::TARGET, static_cast<VectorPos>(vec), tar[row][vec]);
+                scene->createVector(row, VectorType::TARGET, static_cast<VectorPos>(vec), tar[row][vec], inter[1]);
     }
 
-    if ( show[2] )
+    /*if ( show[2] )
     {
         for (int row = 0; row < roll.size(); ++row)
             for (int vec = 0; vec < roll[row].size(); ++vec)
                 scene->createVector(row, VectorType::ROLL, static_cast<VectorPos>(vec), roll[row][vec]);
-    }
+    }*/
+}
 
-    Q_UNUSED(inter)
+void View::setCurves(bool curve[2], std::uint16_t inter[3], QVector<int> stampPos, QVector<int> stampTar, float accRatio, int accPercent, bool acc[2])
+{
+    scene->removeItemsFromScene({ZValue::CURVE});
+
+    QVector<QVector<float>> data;
+    QVector<QVector<QVector<float>>> current;
+    QVector<int> stamp;
+    bool acceleration;
+
+    scene->setAccRation(accRatio);
+    scene->setAccPercent(accPercent);
+
+    for (int i = 0; i < 2; ++i)
+    {
+       if ( curve[i] )
+       {
+           data.clear();
+           acceleration = acc[i];
+
+           if ( i == 0 ) // position
+           {
+               current = positions;
+               stamp = stampPos;
+           }
+           else // target
+           {
+               current = targets;
+               stamp = stampTar;
+           }
+
+           switch (static_cast<Interpolation>(inter[i])) {
+           case Interpolation::LINEAR:
+               scene->createLinearInterpolation(static_cast<VectorType>(i), current, stamp, acceleration);
+               break;
+           case Interpolation::BEZIER:
+               scene->createBezierInterpolation(static_cast<VectorType>(i), current, stamp, acceleration);
+               break;
+           case Interpolation::HERMITE:
+               scene->createHermiteInterpolation(static_cast<VectorType>(i), current, stamp, acceleration);
+               break;
+           case Interpolation::NONE:
+               break;
+           }
+       }
+    }
+}
+
+void View::setViewLine(int rowPos, int rowTar, float p, float t, std::uint16_t inter[3])
+{
+    scene->createViewLine(positions, targets, rowPos, rowTar, p, t, inter[0], inter[1]);
 }
 
 void View::drawBackground(QPainter *painter, const QRectF &rect)
@@ -130,6 +182,48 @@ void View::mouseMoveEvent(QMouseEvent *event)
 void View::mousePressEvent(QMouseEvent *event)
 {
     pressed = true;
+
+    QPointF pos = mapToScene(event->pos());
+    QVector3D vec;
+
+    switch (scene->getDisplay()) {
+    case 0: // X; Y
+        vec.setX(pos.x());
+        vec.setY(pos.y());
+        break;
+    case 1: // X; Z
+        vec.setX(pos.x());
+        vec.setZ(pos.y());
+        break;
+    case 2: // Y; Z
+        vec.setY(pos.x());
+        vec.setZ(pos.y());
+        break;
+    }
+
+    if ( QApplication::keyboardModifiers() & Qt::ControlModifier )
+    {
+        emit createPoint(vec, true);
+    }
+    else if ( QApplication::keyboardModifiers() & Qt::AltModifier )
+    {
+        if (Vect2D *item = static_cast<Vect2D*>(scene->itemAt(mapToScene(event->pos()), transform())))
+        {
+            switch (static_cast<VectorPos>(item->getVec())) {
+            case POS_SELF: break;
+            case POS_IN: case POS_OUT:
+                    scene->joinToParent(item);
+                break;
+            }
+
+            emit selectedItem(item->getType(), item->getRow(), item->getVec());
+        }
+    }
+    else
+    {        
+        emit savePosition(vec, false);
+    }
+
     QGraphicsView::mousePressEvent(event);
 }
 

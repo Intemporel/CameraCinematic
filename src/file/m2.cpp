@@ -7,12 +7,31 @@
  *
  */
 
-void M2::run()
+void M2::run() // used for save / generate
 {
     if (name.isEmpty())
         return;
 
-    if (isRead) name = path ;
+    if (isRead)
+    {
+        name = path ;
+    }
+    else
+    {
+        QSettings setting("WOW-EDITOR", "CameraCinematic");
+        QString path;
+
+        setting.beginGroup("WORK-SETTINGS");
+        path = setting.value("folder-path", "").toString();
+        setting.endGroup();
+
+        if (path.isEmpty())
+        {
+            path = QDir::currentPath();
+        }
+
+        name = path + "/" + name + ".m2";
+    }
 
     FILE * model = fopen(name.toLocal8Bit().data(), "wb+");
 
@@ -28,7 +47,6 @@ void M2::run()
 
 void M2::writeHeader(FILE *model)
 {
-    //02dm
     write(model,0x000,_CHR('0','2','D','M'));
     write(model,0x004,0x00000108);
     write(model,0x008,0x00000005);

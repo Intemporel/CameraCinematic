@@ -2,7 +2,7 @@
 #define PROCESS_H
 
 #include <QThread>
-#include <QDebug>
+#include <QSettings>
 #include <windows.h>
 
 class Process : public QThread
@@ -17,17 +17,17 @@ public:
         Success = false;
         Error = NULL;
 
-        if ( windowName.isEmpty() )
+        if ( clientName().isEmpty() )
         {
             Error = QString("Error: You must set an window name");
             return;
         }
 
-        HWND hWnd = FindWindowA(0, (windowName.toStdString().c_str()));
+        HWND hWnd = FindWindowA(0, (clientName().toStdString().c_str()));
 
         if ( NULL == hWnd )
         {
-            Error = QString("Error: Can't find window: \'%1\'").arg(windowName);
+            Error = QString("Error: Can't find window: \'%1\'").arg(clientName());
             return;
         }
 
@@ -35,7 +35,7 @@ public:
         HANDLE pHandle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
 
         for (int n = 0; n < 3; ++n)
-            ReadProcessMemory(pHandle, (LPVOID)(addressCam[n]), &cam[n], sizeof(float), 0);
+            ReadProcessMemory(pHandle, reinterpret_cast<LPVOID>(addressCam[n]), &cam[n], sizeof(float), 0);
 
         Success = true;
     };
@@ -56,9 +56,20 @@ public:
 
         return ret;
     };
+
+    QString clientName() {
+        QSettings setting("WOW-EDITOR", "CameraCinematic");
+        QString name;
+
+        setting.beginGroup("CLIENT-SETTINGS");
+        name = setting.value("client-window", "").toString();
+        setting.endGroup();
+
+        return name;
+    };
+
     QString getError() { return Error; };
     bool getSuccess() { return Success; };
-    void setWindowName(QString s) { windowName = s; };
 
 private:
     DWORD pid;
@@ -70,7 +81,6 @@ private:
 
     bool Success = false;
     float cam[3] = {.0f,.0f,.0f};
-    QString windowName;
     QString Error = NULL;
 };
 

@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/add.svg</file>
+        <file>icons/brush.svg</file>
+        <file>icons/delete.svg</file>
+        <file>icons/move-down.svg</file>
+        <file>icons/move-up.svg</file>
+        <file>icons/save.svg</file>
+        <file>icons/play.svg</file>
+        <file>icons/refresh.svg</file>
+        <file>icons/settings.svg</file>
+        <file>icons/error.svg</file>
+        <file>icons/folder.svg</file>
+        <file>icons/done.svg</file>
+        <file>icons/file.svg</file>
+        <file>icons/file-add.svg</file>
+        <file>icons/cross-circle.svg</file>
+        <file>icons/video-camera.svg</file>
+    </qresource>
+</RCC>

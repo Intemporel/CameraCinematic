@@ -15,7 +15,9 @@ SOURCES += \
     src/file/skin.cpp \
     src/graph/scene.cpp \
     src/graph/vect2d.cpp \
-    src/graph/view.cpp
+    src/graph/view.cpp \
+    src/menu.cpp \
+    src/settings.cpp
 
 HEADERS += \
     src/cameracinematic.h \
@@ -25,12 +27,19 @@ HEADERS += \
     src/graph/scene.h \
     src/graph/vect2d.h \
     src/graph/view.h \
-    src/process.h
+    src/menu.h \
+    src/process.h \
+    src/settings.h
 
 FORMS += \
-    form.ui
+    src/Editor.ui \
+    src/menu.ui \
+    src/settings.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    ressources/rec.qrc

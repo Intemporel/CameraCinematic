@@ -3,6 +3,7 @@
 
 #include "vect2d.h"
 #include <QGraphicsScene>
+#include <QVector3D>
 
 enum VectorType {
     POSITION,
@@ -14,6 +15,21 @@ enum VectorPos {
     POS_SELF,
     POS_IN,
     POS_OUT
+};
+
+enum Interpolation {
+    NONE,
+    LINEAR,
+    BEZIER,
+    HERMITE,
+};
+
+enum ZValue {
+    BACKGROUND,
+    VECTOR,
+    CURVE,
+    JOIN,
+    VIEWLINE
 };
 
 enum Coord {
@@ -28,12 +44,54 @@ class Scene : public QGraphicsScene
 public:
     Scene();
     void changeDisplay(Coord a1, Coord a2) { Axe1 = a1; Axe2 = a2; };
-    void createVector(int row, VectorType type, VectorPos pos, QVector<float>);
+    void createVector(int row, VectorType type, VectorPos pos, QVector<float> data, int interpolation);
+
+    void createLinearInterpolation(VectorType type, QVector<QVector<QVector<float>>> data, QVector<int> stamp, bool acc);
+    void createHermiteInterpolation(VectorType type, QVector<QVector<QVector<float>>> data, QVector<int> stamp, bool acc);
+    void createBezierInterpolation(VectorType type, QVector<QVector<QVector<float>>> data, QVector<int> stamp, bool acc);
+
+    void createViewLine(QVector<QVector<QVector<float>>>,
+                        QVector<QVector<QVector<float>>>,
+                        int, int,
+                        float, float,
+                        std::uint16_t, std::uint16_t);
+
+    void joinToParent(Vect2D*);
+
+    inline QVector3D interpolationLinear(QVector<QVector<float>> &value1, QVector<QVector<float>> &value2, float percent);
+    inline QVector3D interpolationHermite(QVector<QVector<float>> &value1, QVector<QVector<float>> &value2, float percent);
+    inline QVector3D interpolationBezier(QVector<QVector<float>> &value1, QVector<QVector<float>> &value2, float percent);
+
+    float distance3D(QVector3D &vec1, QVector3D &vec2);
+    QColor accelerationColor(float reference);
+
+    int getDisplay();
+
+    void setAccRation(float r) { accRatio = r; };
+    void setAccPercent(int p) { accPercent = p; };
+
+    QVector<float> getLenghtPos() { return lengthPos; };
+    QVector<float> getLenghtTar() { return lengthTar; };
+
+    void removeItemsFromScene(QVector<int>);
 
 private:
     void generateSceneSize();
+
+    const int POINT = 50;
+
     int Axe1 = Coord::X;
     int Axe2 = Coord::Y;
+
+    int lowSpeed[3] = {46, 134, 193};
+    int highSpeed[3] = {192, 57, 43};
+    int diffSpeed[3] = {(192-46), (134-57), (193-43)};
+
+    float accRatio = 25.0f;
+    int accPercent = 50;
+
+    QVector<float> lengthPos;
+    QVector<float> lengthTar;
 };
 
 #endif // SCENE_H

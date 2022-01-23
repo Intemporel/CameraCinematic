@@ -3,6 +3,7 @@
 
 #include <QDir>
 #include <QThread>
+#include <QSettings>
 
 template<int N>
 using VecF = std::array<float, N>;
@@ -36,7 +37,7 @@ public:
     void read();
     void update();
 
-    void setName(QString s) { name = QDir::currentPath() + "/" + s + ".m2"; };
+    void setName(QString s) { name = s; };
     void setPath(QString p) { path = p; };
     void setInterpolation(std::uint16_t i[3]) {
         for(int n = 0; n < 3; ++n)

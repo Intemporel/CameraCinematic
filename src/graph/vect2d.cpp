@@ -1,8 +1,11 @@
 #include "vect2d.h"
 
-Vect2D::Vect2D(quint8 id, double s, QColor color)
+Vect2D::Vect2D(int type, int row, int vec, double s, QColor color)
 {
-    UID[0] = id;
+    UID[0] = type;
+    UID[1] = row;
+    UID[2] = vec;
+
     size = s;
     brush = QBrush(color);
     pen.setBrush(brush);
@@ -34,9 +37,4 @@ void Vect2D::setCoord(float from[3])
 {
     for (int n = 0; n < 3; n++)
         coord[n] = from[n];
-}
-
-void Vect2D::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    QGraphicsItem::mousePressEvent(event);
 }
