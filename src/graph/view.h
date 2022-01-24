@@ -40,7 +40,7 @@ private:
     QVector<QVector<QVector<float> > > positions;
     QVector<QVector<QVector<float> > > targets;
     QVector<QVector<QVector<float> > > rolls;
-    Vect2D *itemSelected;
+    int itemSelected[3] = {-1,-1,-1};
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect);

@@ -16,6 +16,7 @@ public:
     int getType() { return UID[0]; };
     int getRow() { return UID[1]; };
     int getVec() { return UID[2]; };
+    double getSize() { return size; };
     QBrush getBrush() { return brush; };
 
 private:

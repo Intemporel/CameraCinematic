@@ -26,10 +26,11 @@ enum Interpolation {
 
 enum ZValue {
     BACKGROUND,
-    VECTOR,
     CURVE,
     JOIN,
-    VIEWLINE
+    VIEWLINE,
+    VECTOR,
+    SELECTOR
 };
 
 enum Coord {
@@ -56,7 +57,7 @@ public:
                         float, float,
                         std::uint16_t, std::uint16_t);
 
-    void joinToParent(Vect2D*);
+    void viewSelected(Vect2D*);
 
     inline QVector3D interpolationLinear(QVector<QVector<float>> &value1, QVector<QVector<float>> &value2, float percent);
     inline QVector3D interpolationHermite(QVector<QVector<float>> &value1, QVector<QVector<float>> &value2, float percent);
@@ -70,8 +71,8 @@ public:
     void setAccRation(float r) { accRatio = r; };
     void setAccPercent(int p) { accPercent = p; };
 
-    QVector<float> getLenghtPos() { return lengthPos; };
-    QVector<float> getLenghtTar() { return lengthTar; };
+    QVector<float> getLenghtPos() { return lenghtPos; };
+    QVector<float> getLenghtTar() { return lenghtTar; };
 
     void removeItemsFromScene(QVector<int>);
 
@@ -90,8 +91,8 @@ private:
     float accRatio = 25.0f;
     int accPercent = 50;
 
-    QVector<float> lengthPos;
-    QVector<float> lengthTar;
+    QVector<float> lenghtPos;
+    QVector<float> lenghtTar;
 };
 
 #endif // SCENE_H

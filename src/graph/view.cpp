@@ -74,6 +74,23 @@ void View::setVectors(std::uint16_t inter[3], bool show[2], QVector<QVector<QVec
             for (int vec = 0; vec < roll[row].size(); ++vec)
                 scene->createVector(row, VectorType::ROLL, static_cast<VectorPos>(vec), roll[row][vec]);
     }*/
+
+    if (itemSelected[0] != -1)
+    {
+        for (QGraphicsItem* i : scene->items())
+        {
+            if (Vect2D *n = static_cast<Vect2D*>(i))
+            {
+                if (n->getType() == itemSelected[0] &&
+                        n->getRow() == itemSelected[1] &&
+                        n->getVec() == itemSelected[2])
+                {
+                    scene->viewSelected(n);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void View::setCurves(bool curve[2], std::uint16_t inter[3], QVector<int> stampPos, QVector<int> stampTar, float accRatio, int accPercent, bool acc[2])
@@ -209,12 +226,11 @@ void View::mousePressEvent(QMouseEvent *event)
     {
         if (Vect2D *item = static_cast<Vect2D*>(scene->itemAt(mapToScene(event->pos()), transform())))
         {
-            switch (static_cast<VectorPos>(item->getVec())) {
-            case POS_SELF: break;
-            case POS_IN: case POS_OUT:
-                    scene->joinToParent(item);
-                break;
-            }
+            scene->viewSelected(item);
+
+            itemSelected[0] = item->getType();
+            itemSelected[1] = item->getRow();
+            itemSelected[2] = item->getVec();
 
             emit selectedItem(item->getType(), item->getRow(), item->getVec());
         }

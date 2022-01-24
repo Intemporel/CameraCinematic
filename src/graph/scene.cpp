@@ -5,16 +5,18 @@ Scene::Scene()
     generateSceneSize();
 }
 
-void Scene::joinToParent(Vect2D *item)
+void Scene::viewSelected(Vect2D *item)
 {
-    int type = item->getType();
-    int row = item->getRow();
-    Vect2D *parent = NULL;
-
     if ( item == NULL )
         return;
 
-    removeItemsFromScene({ZValue::JOIN});
+    int type = item->getType();
+    int row = item->getRow();
+
+    Vect2D *first = NULL;
+    Vect2D *second = NULL;
+
+    removeItemsFromScene({ZValue::JOIN, ZValue::SELECTOR});
 
     for (QGraphicsItem* i : items())
     {
@@ -22,22 +24,88 @@ void Scene::joinToParent(Vect2D *item)
         {
             if (n->getType() == type
                     && n->getRow() == row
-                    && static_cast<VectorPos>(n->getVec()) == POS_SELF)
+                    && n->getVec() != item->getVec())
             {
-                parent = n;
+                first = n;
                 break;
             }
         }
     }
 
-    if ( parent != NULL )
+    if ( first != NULL )
     {
-        QGraphicsLineItem *line = new QGraphicsLineItem(item->x(), item->y(), parent->x(), parent->y());
-        line->setPen(QPen(item->getBrush(), 1, Qt::DotLine));
-        line->setZValue(ZValue::JOIN);
 
-        addItem(line);
+        for (QGraphicsItem* i : items())
+        {
+            if (Vect2D *n = static_cast<Vect2D*>(i))
+            {
+                if (n->getType() == type
+                        && n->getRow() == row
+                        && n->getVec() != item->getVec()
+                        && n->getVec() != first->getVec())
+                {
+                    second = n;
+                    break;
+                }
+            }
+        }
+
+        Vect2D *parent = NULL;
+        Vect2D *in = NULL;
+        Vect2D *out = NULL;
+
+        switch (static_cast<VectorPos>(item->getVec()))
+        {
+        case VectorPos::POS_SELF: parent = item; break;
+        case VectorPos::POS_IN: in = item; break;
+        case VectorPos::POS_OUT: out = item; break;
+        }
+
+        switch (static_cast<VectorPos>(first->getVec()))
+        {
+        case VectorPos::POS_SELF: parent = first; break;
+        case VectorPos::POS_IN: in = first; break;
+        case VectorPos::POS_OUT: out = first; break;
+        }
+
+        if ( second != NULL )
+        {
+            switch (static_cast<VectorPos>(second->getVec()))
+            {
+            case VectorPos::POS_SELF: parent = second; break;
+            case VectorPos::POS_IN: in = second; break;
+            case VectorPos::POS_OUT: out = second; break;
+            }
+        }
+
+        if ( parent == NULL )
+            goto selectorOnly;
+
+        if ( in != NULL )
+        {
+            QGraphicsLineItem *line = new QGraphicsLineItem(in->x(), in->y(), parent->x(), parent->y());
+            line->setPen(QPen(QBrush(Qt::black), 1, Qt::DotLine, Qt::PenCapStyle::RoundCap, Qt::PenJoinStyle::RoundJoin));
+            line->setZValue(ZValue::JOIN);
+            addItem(line);
+        }
+
+        if ( out != NULL )
+        {
+            QGraphicsLineItem *line = new QGraphicsLineItem(out->x(), out->y(), parent->x(), parent->y());
+            line->setPen(QPen(QBrush(Qt::black), 1, Qt::DotLine, Qt::PenCapStyle::RoundCap, Qt::PenJoinStyle::RoundJoin));
+            line->setZValue(ZValue::JOIN);
+            addItem(line);
+        }
     }
+
+    selectorOnly:
+
+    QGraphicsEllipseItem *r = new QGraphicsEllipseItem(item->x() - item->getSize()/2,
+                                                       item->y() - item->getSize()/2,
+                                                       item->getSize(), item->getSize());
+    r->setPen(QPen(QBrush(Qt::black), 1, Qt::DotLine, Qt::PenCapStyle::RoundCap, Qt::PenJoinStyle::RoundJoin));
+    r->setZValue(ZValue::SELECTOR);
+    addItem(r);
 }
 
 void Scene::createVector(int row, VectorType type, VectorPos pos, QVector<float> data, int inter)
@@ -116,11 +184,11 @@ void Scene::createLinearInterpolation(VectorType type, QVector<QVector<QVector<f
     switch (type) {
     case VectorType::POSITION:
         color = QColor(31, 97, 141);
-        lengthPos.clear();
+        lenghtPos.clear();
         break;
     case VectorType::TARGET:
         color = QColor(146, 43, 33);
-        lengthTar.clear();
+        lenghtTar.clear();
         break;
     case VectorType::ROLL:
         break;
@@ -133,8 +201,16 @@ void Scene::createLinearInterpolation(VectorType type, QVector<QVector<QVector<f
 
         QGraphicsLineItem *line = new QGraphicsLineItem(start[Axe1], start[Axe2], end[Axe1], end[Axe2]);
 
-        if (static_cast<VectorType>(type) == VectorType::POSITION) lengthPos.push_back(distance3D(start, end));
-        else lengthTar.push_back(distance3D(start, end));
+        if (static_cast<VectorType>(type) == VectorType::POSITION) lenghtPos.push_back(distance3D(start, end));
+        else lenghtTar.push_back(distance3D(start, end));
+
+        if ( acc )
+        {
+            int lastStamp = (row == 0) ? 0 : stamp[row];
+
+            if (static_cast<VectorType>(type) == VectorType::POSITION) color = accelerationColor((float)(stamp[row+1]-lastStamp)/(float)POINT / lenghtPos.last());
+            else color = accelerationColor((float)(stamp[row+1]-lastStamp)/(float)POINT / lenghtTar.last());
+        }
 
         line->setPen(QPen(QBrush(color), 1));
         line->setZValue(ZValue::CURVE);
@@ -149,11 +225,11 @@ void Scene::createHermiteInterpolation(VectorType type, QVector<QVector<QVector<
     switch (type) {
     case VectorType::POSITION:
         color = QColor(31, 97, 141);
-        lengthPos.clear();
+        lenghtPos.clear();
         break;
     case VectorType::TARGET:
         color = QColor(146, 43, 33);
-        lengthTar.clear();
+        lenghtTar.clear();
         break;
     case VectorType::ROLL:
         break;
@@ -179,6 +255,12 @@ void Scene::createHermiteInterpolation(VectorType type, QVector<QVector<QVector<
 
             lenght.push_back(distance3D(cur[i], cur[i+1]));
 
+            if ( acc )
+            {
+                int lastStamp = (row == 0) ? 0 : stamp[row];
+                color = accelerationColor((float)(stamp[row+1]-lastStamp)/(float)POINT / lenght.last());
+            }
+
             line->setPen(QPen(QBrush(color), 1));
             line->setZValue(ZValue::CURVE);
             addItem(line);
@@ -188,8 +270,8 @@ void Scene::createHermiteInterpolation(VectorType type, QVector<QVector<QVector<
         for (int i = 0; i < POINT; ++i)
             total += lenght[i];
 
-        if (static_cast<VectorType>(type) == VectorType::POSITION) lengthPos.push_back(total);
-        else lengthTar.push_back(total);
+        if (static_cast<VectorType>(type) == VectorType::POSITION) lenghtPos.push_back(total);
+        else lenghtTar.push_back(total);
     }
 }
 
@@ -200,11 +282,11 @@ void Scene::createBezierInterpolation(VectorType type, QVector<QVector<QVector<f
     switch (type) {
     case VectorType::POSITION:
         color = QColor(31, 97, 141);
-        lengthPos.clear();
+        lenghtPos.clear();
         break;
     case VectorType::TARGET:
         color = QColor(146, 43, 33);
-        lengthTar.clear();
+        lenghtTar.clear();
         break;
     case VectorType::ROLL:
         break;
@@ -230,14 +312,6 @@ void Scene::createBezierInterpolation(VectorType type, QVector<QVector<QVector<f
 
             lenght.push_back(distance3D(cur[i], cur[i+1]));
 
-            /*int lastStamp = (row == 0) ? 0 : stamp[row];
-            if ( acc )
-                qDebug() << lenght.last()
-                         << stamp[row+1]
-                         << stamp[row+1]-lastStamp
-                         << (float)(stamp[row+1]-lastStamp)/(float)POINT
-                         << (float)(stamp[row+1]-lastStamp)/(float)POINT / lenght.last() ;*/
-
             if ( acc )
             {
                 int lastStamp = (row == 0) ? 0 : stamp[row];
@@ -253,8 +327,8 @@ void Scene::createBezierInterpolation(VectorType type, QVector<QVector<QVector<f
         for (int i = 0; i < POINT; ++i)
             total += lenght[i];
 
-        if (static_cast<VectorType>(type) == VectorType::POSITION) lengthPos.push_back(total);
-        else lengthTar.push_back(total);
+        if (static_cast<VectorType>(type) == VectorType::POSITION) lenghtPos.push_back(total);
+        else lenghtTar.push_back(total);
     }
 }
 
