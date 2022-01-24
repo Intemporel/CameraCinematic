@@ -60,7 +60,7 @@ CameraCinematic::CameraCinematic(QWidget *parent)
 
     connect(ui->showPositions, &QCheckBox::stateChanged, [=]() {sendVectors();});
     connect(ui->showTargets, &QCheckBox::stateChanged, [=]() {sendVectors();});
-    connect(ui->showRolls, &QCheckBox::stateChanged, [=]() {sendVectors();});
+    //connect(ui->showRolls, &QCheckBox::stateChanged, [=]() {sendVectors();});
 
     connect(ui->curvePositions, &QCheckBox::stateChanged, [=]() {sendCurves();});
     connect(ui->curveTargets, &QCheckBox::stateChanged, [=]() {sendCurves();});

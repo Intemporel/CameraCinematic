@@ -31,8 +31,8 @@ enum ZValue {
     JOIN,
     VIEWLINE,
     VECTOR,
-    SELECTOR,
-    FORCED_CURVE
+    FORCED_CURVE,
+    SELECTOR
 };
 
 enum Coord {
