@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1340</width>
-    <height>922</height>
+    <width>1192</width>
+    <height>866</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1453,6 +1453,13 @@ border-radius: 4px;
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="curveOnTop">
+              <property name="text">
+               <string>Force curve display on top</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QGroupBox" name="groupBox_2">
               <property name="title">
                <string>Draw curves : </string>
@@ -1674,78 +1681,21 @@ border-radius: 4px;
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_8">
                <item>
-                <widget class="QLineEdit" name="sceneX">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>80</width>
-                   <height>22</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>80</width>
-                   <height>22</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_14">
+                <widget class="QLabel" name="sceneX">
                  <property name="text">
                   <string>X : </string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="sceneY">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>80</width>
-                   <height>22</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>80</width>
-                   <height>22</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_15">
+                <widget class="QLabel" name="sceneY">
                  <property name="text">
                   <string>Y : </string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="sceneZ">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>80</width>
-                   <height>22</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>80</width>
-                   <height>22</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_16">
+                <widget class="QLabel" name="sceneZ">
                  <property name="text">
                   <string>Z : </string>
                  </property>
@@ -1826,7 +1776,7 @@ border-radius: 4px;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1340</width>
+     <width>1192</width>
      <height>25</height>
     </rect>
    </property>

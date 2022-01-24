@@ -93,9 +93,9 @@ void View::setVectors(std::uint16_t inter[3], bool show[2], QVector<QVector<QVec
     }
 }
 
-void View::setCurves(bool curve[2], std::uint16_t inter[3], QVector<int> stampPos, QVector<int> stampTar, float accRatio, int accPercent, bool acc[2])
+void View::setCurves(bool curve[2], std::uint16_t inter[3], QVector<int> stampPos, QVector<int> stampTar, float accRatio, int accPercent, bool acc[2], bool curveOnTop)
 {
-    scene->removeItemsFromScene({ZValue::CURVE});
+    scene->removeItemsFromScene({ZValue::CURVE, ZValue::FORCED_CURVE});
 
     QVector<QVector<float>> data;
     QVector<QVector<QVector<float>>> current;
@@ -104,6 +104,7 @@ void View::setCurves(bool curve[2], std::uint16_t inter[3], QVector<int> stampPo
 
     scene->setAccRation(accRatio);
     scene->setAccPercent(accPercent);
+    scene->setForceDisplayCurveOnTop(curveOnTop);
 
     for (int i = 0; i < 2; ++i)
     {

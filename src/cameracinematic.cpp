@@ -64,6 +64,7 @@ CameraCinematic::CameraCinematic(QWidget *parent)
 
     connect(ui->curvePositions, &QCheckBox::stateChanged, [=]() {sendCurves();});
     connect(ui->curveTargets, &QCheckBox::stateChanged, [=]() {sendCurves();});
+    connect(ui->curveOnTop, &QCheckBox::stateChanged, [=]() {sendCurves();});
 
     connect(ui->displayAxe, &QComboBox::currentIndexChanged, [=](int index) {ui->graphicsView->changeDisplay(index); sendVectors();});
     connect(ui->graphicsView, SIGNAL(savePosition(QVector3D,bool)), this, SLOT(storePosition(QVector3D,bool)));
@@ -104,7 +105,6 @@ CameraCinematic::CameraCinematic(QWidget *parent)
     connect(&camModel, SIGNAL(readDone()), this, SLOT(m2FileRead()));
     connect(&camModel, SIGNAL(updateDone()), this, SLOT(m2FileUpdate()));
 
-    //connect(ui->dbcRefresh, &QPushButton::clicked, [=]() {updateDBC();});
     connect(ui->dbcCameraList, &QComboBox::currentIndexChanged, [=]() {updateDBCInfo(false);});
 
     connect(ui->clientPosition, &QPushButton::clicked, [=]() {
@@ -133,22 +133,6 @@ CameraCinematic::CameraCinematic(QWidget *parent)
         sendVectors();
     });
     connect(ui->selectedPosition, &QPushButton::clicked, [=]() {createPointFromStoredPosition();});
-    /*connect(ui->selectModel, &QPushButton::clicked, [=]() {
-        modelPath = QFileDialog::getOpenFileName(this,
-                                                tr("Open CinematicCamera"),
-                                                "/",
-                                                tr("Model Files (*.m2 *.mdx)"));
-
-        if ( !modelPath.isEmpty() )
-        {
-            QString skinPath = modelPath;
-            camSkin.setPath(skinPath.replace(".m2", "00.skin"));
-            camModel.setPath(modelPath);
-            camModel.read();
-            updateRowList();
-            sendVectors();
-        }
-    });*/
 
     connect(ui->alignVector, &QPushButton::clicked, [=]() {alignVector();});
     connect(ui->normalizeSpeed, &QPushButton::clicked, [=]() {normalizeSpeed();});
@@ -210,20 +194,20 @@ void CameraCinematic::selectItem(int type, int row, int vec)
 
 void CameraCinematic::storePosition(QVector3D pos, bool create)
 {
-    ui->sceneX->setText(QString::number(pos.x()));
-    ui->sceneY->setText(QString::number(pos.y()));
-    ui->sceneZ->setText(QString::number(pos.z()));
+    ui->sceneX->setText(QString("X : %1").arg(pos.x()));
+    ui->sceneY->setText(QString("Y : %1").arg(pos.y()));
+    ui->sceneZ->setText(QString("Z : %1").arg(pos.z()));
 
     switch (ui->displayAxe->currentIndex())
     {
     case 0: // X, Y
-        ui->sceneZ->setText("null");
+        ui->sceneZ->setText("Z : null");
         break;
     case 1: // X, Z
-        ui->sceneY->setText("null");
+        ui->sceneY->setText("Y : null");
         break;
     case 2: // Y, Z
-        ui->sceneX->setText("null");
+        ui->sceneX->setText("X : null");
         break;
     }
 
@@ -753,7 +737,8 @@ void CameraCinematic::sendCurves()
     ui->graphicsView->setCurves(curve, interpolation,
                                 stampPos, stampTar,
                                 (float)ui->accelerationRatio->value(),
-                                ui->accelerationPercent->value(), acc);
+                                ui->accelerationPercent->value(), acc,
+                                ui->curveOnTop->isChecked());
 
     updateViewTime(ui->viewTime->value());
 
@@ -890,19 +875,19 @@ void CameraCinematic::createPointFromStoredPosition()
 {
     QVector3D pos;
 
-    if (ui->sceneX->text() != "null")
-        pos.setX(ui->sceneX->text().toFloat());
+    if (ui->sceneX->text().remove("X : ") != "null")
+        pos.setX(ui->sceneX->text().remove("X : ").toFloat());
 
-    if (ui->sceneY->text() != "null")
-        pos.setY(ui->sceneY->text().toFloat());
+    if (ui->sceneY->text().remove("Y : ") != "null")
+        pos.setY(ui->sceneY->text().remove("Y : ").toFloat());
 
-    if (ui->sceneZ->text() != "null")
-        pos.setZ(ui->sceneZ->text().toFloat());
+    if (ui->sceneZ->text().remove("Z : ") != "null")
+        pos.setZ(ui->sceneZ->text().remove("Z : ").toFloat());
 
     bool isNull[3] {
-        (ui->sceneX->text() == "null"),
-        (ui->sceneY->text() == "null"),
-        (ui->sceneZ->text() == "null")
+        (ui->sceneX->text().remove("X : ") == "null"),
+        (ui->sceneY->text().remove("Y : ") == "null"),
+        (ui->sceneZ->text().remove("Z : ") == "null")
     };
 
     int row = ui->rowList->currentIndex();
@@ -943,6 +928,8 @@ void CameraCinematic::createFileMenu()
     connect(settingsAct, &QAction::triggered, [this]() {
         settings = new Settings(this);
         settings->show();
+
+        connect(settings, &QDialog::finished, [=]() { sendVectors(); });
     });
 
     closeAct = new QAction(tr("Close"), this);

@@ -115,39 +115,48 @@ void Scene::createVector(int row, VectorType type, VectorPos pos, QVector<float>
         if ( pos == VectorPos::POS_IN || pos == VectorPos::POS_OUT )
             return;
 
+    QSettings setting = QSettings("WOW-EDITOR", "CameraCinematic");
+    setting.beginGroup("COLOR-SETTINGS");
+    QColor posPrim = QColor(setting.value("pos-prim", QColor(31, 97, 141).name()).toString());
+    QColor posSec = QColor(setting.value("pos-sec", QColor(20, 143, 119).name()).toString());
+    QColor tarPrim = QColor(setting.value("tar-prim", QColor(146, 43, 33).name()).toString());
+    QColor tarSec = QColor(setting.value("tar-sec", QColor(118, 68, 138).name()).toString());
+    setting.endGroup();
+
     QColor color = Qt::black;
+
 
     switch (type) {
     case VectorType::POSITION:
         if ( row % 2 == 0 )
         {
-            color = QColor(31, 97, 141);
+            color = posPrim;
 
             if ( pos != VectorPos::POS_SELF)
-                color = QColor(41, 128, 185);
+                color = subColor(posPrim);
         }
         else
         {
-            color = QColor(20, 143, 119);
+            color = posSec;
 
             if ( pos != VectorPos::POS_SELF)
-                color = QColor(26, 188, 156);
+                color = subColor(posSec);
         }
         break;
     case VectorType::TARGET:
         if ( row % 2 == 0 )
         {
-            color = QColor(146, 43, 33);
+            color = tarPrim;
 
             if ( pos != VectorPos::POS_SELF)
-                color = QColor(192, 57, 43);
+                color = subColor(tarPrim);
         }
         else
         {
-            color = QColor(118, 68, 138);
+            color = tarSec;
 
             if ( pos != VectorPos::POS_SELF)
-                color = QColor(155, 89, 182);
+                color = subColor(tarSec);
         }
         break;
     case VectorType::ROLL:
@@ -180,14 +189,21 @@ void Scene::createVector(int row, VectorType type, VectorPos pos, QVector<float>
 void Scene::createLinearInterpolation(VectorType type, QVector<QVector<QVector<float> > > data, QVector<int> stamp, bool acc)
 {
     QColor color = Qt::black;
+    ZValue CurveZ = (drawCurveOnTop) ? ZValue::FORCED_CURVE : ZValue::CURVE;
+
+    QSettings setting = QSettings("WOW-EDITOR", "CameraCinematic");
+    setting.beginGroup("COLOR-SETTINGS");
+    QColor posPrim = QColor(setting.value("pos-prim", QColor(31, 97, 141).name()).toString());
+    QColor tarPrim = QColor(setting.value("tar-prim", QColor(146, 43, 33).name()).toString());
+    setting.endGroup();
 
     switch (type) {
     case VectorType::POSITION:
-        color = QColor(31, 97, 141);
+        color = posPrim;
         lenghtPos.clear();
         break;
     case VectorType::TARGET:
-        color = QColor(146, 43, 33);
+        color = tarPrim;
         lenghtTar.clear();
         break;
     case VectorType::ROLL:
@@ -213,7 +229,7 @@ void Scene::createLinearInterpolation(VectorType type, QVector<QVector<QVector<f
         }
 
         line->setPen(QPen(QBrush(color), 1));
-        line->setZValue(ZValue::CURVE);
+        line->setZValue(CurveZ);
         addItem(line);
     }
 }
@@ -221,14 +237,21 @@ void Scene::createLinearInterpolation(VectorType type, QVector<QVector<QVector<f
 void Scene::createHermiteInterpolation(VectorType type, QVector<QVector<QVector<float> > > data, QVector<int> stamp, bool acc)
 {
     QColor color = Qt::black;
+    ZValue CurveZ = (drawCurveOnTop) ? ZValue::FORCED_CURVE : ZValue::CURVE;
+
+    QSettings setting = QSettings("WOW-EDITOR", "CameraCinematic");
+    setting.beginGroup("COLOR-SETTINGS");
+    QColor posPrim = QColor(setting.value("pos-prim", QColor(31, 97, 141).name()).toString());
+    QColor tarPrim = QColor(setting.value("tar-prim", QColor(146, 43, 33).name()).toString());
+    setting.endGroup();
 
     switch (type) {
     case VectorType::POSITION:
-        color = QColor(31, 97, 141);
+        color = posPrim;
         lenghtPos.clear();
         break;
     case VectorType::TARGET:
-        color = QColor(146, 43, 33);
+        color = tarPrim;
         lenghtTar.clear();
         break;
     case VectorType::ROLL:
@@ -262,7 +285,7 @@ void Scene::createHermiteInterpolation(VectorType type, QVector<QVector<QVector<
             }
 
             line->setPen(QPen(QBrush(color), 1));
-            line->setZValue(ZValue::CURVE);
+            line->setZValue(CurveZ);
             addItem(line);
         }
 
@@ -278,14 +301,21 @@ void Scene::createHermiteInterpolation(VectorType type, QVector<QVector<QVector<
 void Scene::createBezierInterpolation(VectorType type, QVector<QVector<QVector<float> > > data, QVector<int> stamp, bool acc)
 {
     QColor color = Qt::black;
+    ZValue CurveZ = (drawCurveOnTop) ? ZValue::FORCED_CURVE : ZValue::CURVE;
+
+    QSettings setting = QSettings("WOW-EDITOR", "CameraCinematic");
+    setting.beginGroup("COLOR-SETTINGS");
+    QColor posPrim = QColor(setting.value("pos-prim", QColor(31, 97, 141).name()).toString());
+    QColor tarPrim = QColor(setting.value("tar-prim", QColor(146, 43, 33).name()).toString());
+    setting.endGroup();
 
     switch (type) {
     case VectorType::POSITION:
-        color = QColor(31, 97, 141);
+        color = posPrim;
         lenghtPos.clear();
         break;
     case VectorType::TARGET:
-        color = QColor(146, 43, 33);
+        color = tarPrim;
         lenghtTar.clear();
         break;
     case VectorType::ROLL:
@@ -319,7 +349,7 @@ void Scene::createBezierInterpolation(VectorType type, QVector<QVector<QVector<f
             }
 
             line->setPen(QPen(QBrush(color), 1));
-            line->setZValue(ZValue::CURVE);
+            line->setZValue(CurveZ);
             addItem(line);
         }
 
@@ -456,24 +486,40 @@ QColor Scene::accelerationColor(float reference)
 {
     QColor c;
 
-    float range_min = accRatio * (1.0f-((float)accPercent/100.0f)); // RED
-    float range_max = accRatio * (1.0f+((float)accPercent/100.0f)); // BLUE
+    QSettings setting = QSettings("WOW-EDITOR", "CameraCinematic");
+    setting.beginGroup("COLOR-SETTINGS");
+    QColor highSpeed = QColor(setting.value("high-speed", QColor(192, 57, 43).name()).toString());
+    QColor lowSpeed = QColor(setting.value("low-speed", QColor(46, 134, 193).name()).toString());
+    setting.endGroup();
+
+    float range_min = accRatio * (1.0f-((float)accPercent/100.0f)); // HIGH
+    float range_max = accRatio * (1.0f+((float)accPercent/100.0f)); // LOW
 
     if ( reference <= range_min )
     {
-        c = QColor(highSpeed[0], highSpeed[1], highSpeed[2]);
+        c = highSpeed;
     }
     else if ( reference >= range_max )
     {
-        c = QColor(lowSpeed[0], lowSpeed[1], lowSpeed[2]);
+        c = lowSpeed;
     }
     else
     {
         float percent = (reference-range_min)*100.0f/(range_max-range_min);
 
-        float newRed = highSpeed[0] - diffSpeed[0]*(percent/100.0f);
-        float newGreen = highSpeed[1] + diffSpeed[1]*(percent/100.0f);
-        float newBlue = highSpeed[2] + diffSpeed[2]*(percent/100.0f);
+        int diffSpeed[3] = {
+            (lowSpeed.red()-highSpeed.red()),
+            (lowSpeed.green()-highSpeed.green()),
+            (lowSpeed.blue()-highSpeed.blue())
+        };
+
+        int coeffR = (diffSpeed[0] < 0) ? -1 : 1;
+        int coeffG = (diffSpeed[1] < 0) ? -1 : 1;
+        int coeffB = (diffSpeed[2] < 0) ? -1 : 1;
+
+        float newRed =   highSpeed.red()   + (qAbs(diffSpeed[0])*(percent/100.0f))*coeffR;
+        float newGreen = highSpeed.green() + (qAbs(diffSpeed[1])*(percent/100.0f))*coeffG;
+        float newBlue =  highSpeed.blue()  + (qAbs(diffSpeed[2])*(percent/100.0f))*coeffB;
 
         c = QColor((int)newRed, (int)newGreen, (int)newBlue);
     }

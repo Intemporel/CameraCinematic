@@ -3,6 +3,7 @@
 
 #include "vect2d.h"
 #include <QGraphicsScene>
+#include <QSettings>
 #include <QVector3D>
 
 enum VectorType {
@@ -30,7 +31,8 @@ enum ZValue {
     JOIN,
     VIEWLINE,
     VECTOR,
-    SELECTOR
+    SELECTOR,
+    FORCED_CURVE
 };
 
 enum Coord {
@@ -65,16 +67,26 @@ public:
 
     float distance3D(QVector3D &vec1, QVector3D &vec2);
     QColor accelerationColor(float reference);
+    QColor subColor(QColor c) {
+        float delta = 1.25f;
+        int nR = (c.red()*delta > 255) ? 255 : c.red()*delta;
+        int nG = (c.green()*delta > 255) ? 255 : c.green()*delta;
+        int nB = (c.blue()*delta > 255) ? 255 : c.blue()*delta;
+
+        return QColor(nR, nG, nB);
+    };
 
     int getDisplay();
 
     void setAccRation(float r) { accRatio = r; };
     void setAccPercent(int p) { accPercent = p; };
+    void setForceDisplayCurveOnTop(bool b) { drawCurveOnTop = b; };
 
     QVector<float> getLenghtPos() { return lenghtPos; };
     QVector<float> getLenghtTar() { return lenghtTar; };
 
     void removeItemsFromScene(QVector<int>);
+
 
 private:
     void generateSceneSize();
@@ -84,12 +96,12 @@ private:
     int Axe1 = Coord::X;
     int Axe2 = Coord::Y;
 
-    int lowSpeed[3] = {46, 134, 193};
-    int highSpeed[3] = {192, 57, 43};
-    int diffSpeed[3] = {(192-46), (134-57), (193-43)};
+    //int lowSpeed[3] = {46, 134, 193};
+    //int highSpeed[3] = {192, 57, 43};
 
     float accRatio = 25.0f;
     int accPercent = 50;
+    bool drawCurveOnTop = false;
 
     QVector<float> lenghtPos;
     QVector<float> lenghtTar;

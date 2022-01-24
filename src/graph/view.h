@@ -20,7 +20,7 @@ public:
                     QVector<QVector<QVector<float>>> pos,
                     QVector<QVector<QVector<float>>> tar//,
                     /*QVector<QVector<QVector<float>>> roll*/);
-    void setCurves(bool curve[2], std::uint16_t inter[3], QVector<int> stampPos, QVector<int> stampTar, float accRatio, int accPercent, bool acc[2]);
+    void setCurves(bool curve[2], std::uint16_t inter[3], QVector<int> stampPos, QVector<int> stampTar, float accRatio, int accPercent, bool acc[2], bool curveOnTop);
     void setViewLine(int rowPos, int rowTar, float p, float t, std::uint16_t inter[3]);
 
     void clear() { scene->clear(); };
