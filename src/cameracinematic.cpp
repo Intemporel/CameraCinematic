@@ -493,7 +493,6 @@ void CameraCinematic::updateTableColor()
 
     QFont font = ui->tab->tabBar()->font();
     font.setPointSize(13);
-    font.setBold(true);
     ui->tab->tabBar()->setFont(font);
 
     ui->tab->tabBar()->setTabTextColor(0, posColor);
