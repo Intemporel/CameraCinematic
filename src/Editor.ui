@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1192</width>
-    <height>866</height>
+    <width>1203</width>
+    <height>783</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -168,6 +168,12 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string> Brush Time</string>
             </property>
@@ -268,6 +274,12 @@
               <height>16777215</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
              <string> Generate</string>
             </property>
@@ -299,6 +311,14 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
           <property name="tabPosition">
            <enum>QTabWidget::North</enum>
           </property>
@@ -310,8 +330,8 @@
           </property>
           <property name="iconSize">
            <size>
-            <width>16</width>
-            <height>16</height>
+            <width>20</width>
+            <height>20</height>
            </size>
           </property>
           <property name="usesScrollButtons">
@@ -330,8 +350,12 @@
            <bool>false</bool>
           </property>
           <widget class="QWidget" name="positions">
+           <attribute name="icon">
+            <iconset resource="../ressources/rec.qrc">
+             <normaloff>:/icons/icons/position.svg</normaloff>:/icons/icons/position.svg</iconset>
+           </attribute>
            <attribute name="title">
-            <string>Postions</string>
+            <string> Positions</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout">
             <item>
@@ -488,8 +512,12 @@
            </layout>
           </widget>
           <widget class="QWidget" name="targets">
+           <attribute name="icon">
+            <iconset resource="../ressources/rec.qrc">
+             <normaloff>:/icons/icons/target.svg</normaloff>:/icons/icons/target.svg</iconset>
+           </attribute>
            <attribute name="title">
-            <string>Targets</string>
+            <string> Targets</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
@@ -634,8 +662,12 @@
            </layout>
           </widget>
           <widget class="QWidget" name="rolls">
+           <attribute name="icon">
+            <iconset resource="../ressources/rec.qrc">
+             <normaloff>:/icons/icons/roll.svg</normaloff>:/icons/icons/roll.svg</iconset>
+           </attribute>
            <attribute name="title">
-            <string>Rolls</string>
+            <string> Rolls</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
@@ -764,6 +796,14 @@
            <string>Controls : </string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_12">
+           <item>
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Everything you do here bellow still applied on selected vector defined by this two selector,
+in reference to current tab</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <property name="topMargin">
@@ -995,62 +1035,7 @@
               <item>
                <widget class="QSlider" name="speedRatio">
                 <property name="styleSheet">
-                 <string notr="true">QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: white;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
-background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    stop: 0 #bbf, stop: 1 #55f);
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #eee, stop:1 #ccc);
-border: 1px solid #777;
-width: 13px;
-margin-top: -2px;
-margin-bottom: -2px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="maximum">
                  <number>100</number>
@@ -1257,62 +1242,7 @@ border-radius: 4px;
                </size>
               </property>
               <property name="styleSheet">
-               <string notr="true">QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: white;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
-background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    stop: 0 #bbf, stop: 1 #55f);
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #eee, stop:1 #ccc);
-border: 1px solid #777;
-width: 13px;
-margin-top: -2px;
-margin-bottom: -2px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
+               <string notr="true"/>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1355,6 +1285,12 @@ border-radius: 4px;
                 <width>16777215</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
               </property>
               <property name="text">
                <string> Play Cinematic</string>
@@ -1480,186 +1416,105 @@ border-radius: 4px;
             </item>
             <item>
              <widget class="QGroupBox" name="groupBox_5">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>130</height>
+               </size>
+              </property>
               <property name="title">
                <string>Show Acceleration : </string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
-                <widget class="QCheckBox" name="accelerationPosition">
-                 <property name="text">
-                  <string>Positions</string>
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <property name="topMargin">
+                  <number>0</number>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="accelerationTarget">
-                 <property name="text">
-                  <string>Targets</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_accelerationRatio">
-                 <property name="text">
-                  <string>Ratio</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSlider" name="accelerationRatio">
-                 <property name="styleSheet">
-                  <string notr="true">QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: white;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
-background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    stop: 0 #bbf, stop: 1 #55f);
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #eee, stop:1 #ccc);
-border: 1px solid #777;
-width: 13px;
-margin-top: -2px;
-margin-bottom: -2px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
-                 </property>
-                 <property name="maximum">
-                  <number>200</number>
-                 </property>
-                 <property name="value">
-                  <number>27</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_accelerationPercent">
-                 <property name="text">
-                  <string>Percent</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSlider" name="accelerationPercent">
-                 <property name="styleSheet">
-                  <string notr="true">QSlider::groove:horizontal {
-border: 1px solid #bbb;
-background: white;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal {
-background: qlineargradient(x1: 0, y1: 0,    x2: 0, y2: 1,
-    stop: 0 #66e, stop: 1 #bbf);
-background: qlineargradient(x1: 0, y1: 0.2, x2: 1, y2: 1,
-    stop: 0 #bbf, stop: 1 #55f);
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::add-page:horizontal {
-background: #fff;
-border: 1px solid #777;
-height: 10px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #eee, stop:1 #ccc);
-border: 1px solid #777;
-width: 13px;
-margin-top: -2px;
-margin-bottom: -2px;
-border-radius: 4px;
-}
-
-QSlider::handle:horizontal:hover {
-background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-    stop:0 #fff, stop:1 #ddd);
-border: 1px solid #444;
-border-radius: 4px;
-}
-
-QSlider::sub-page:horizontal:disabled {
-background: #bbb;
-border-color: #999;
-}
-
-QSlider::add-page:horizontal:disabled {
-background: #eee;
-border-color: #999;
-}
-
-QSlider::handle:horizontal:disabled {
-background: #eee;
-border: 1px solid #aaa;
-border-radius: 4px;
-}</string>
-                 </property>
-                 <property name="maximum">
-                  <number>100</number>
-                 </property>
-                 <property name="value">
-                  <number>50</number>
-                 </property>
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_accelerationRange">
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_13">
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QCheckBox" name="accelerationPosition">
+                     <property name="text">
+                      <string>Positions</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="accelerationTarget">
+                     <property name="text">
+                      <string>Targets</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_accelerationRatio">
+                     <property name="text">
+                      <string>Ratio</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_accelerationPercent">
+                     <property name="text">
+                      <string>Percent</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_14">
+                   <item>
+                    <widget class="QSlider" name="accelerationRatio">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>90</height>
+                      </size>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true"/>
+                     </property>
+                     <property name="maximum">
+                      <number>200</number>
+                     </property>
+                     <property name="value">
+                      <number>27</number>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSlider" name="accelerationPercent">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>90</height>
+                      </size>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true"/>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>50</number>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -1766,7 +1621,7 @@ border-radius: 4px;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1192</width>
+     <width>1203</width>
      <height>25</height>
     </rect>
    </property>

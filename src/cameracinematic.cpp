@@ -20,7 +20,6 @@ CameraCinematic::CameraCinematic(QWidget *parent)
 
     ui->label_accelerationRatio->setText(QString("Ratio %1 ms/f").arg((float)ui->accelerationRatio->value()));
     ui->label_accelerationPercent->setText(QString("Percent %1%").arg(ui->accelerationPercent->value()));
-    ui->label_accelerationRange->setText(QString("Range [%1; %2]").arg((float)ui->accelerationRatio->value()*1.5f).arg((float)ui->accelerationRatio->value()*0.5f));
 
     updateTimeView = new QTimer(this);
 
@@ -60,7 +59,6 @@ CameraCinematic::CameraCinematic(QWidget *parent)
 
     connect(ui->showPositions, &QCheckBox::stateChanged, [=]() {sendVectors();});
     connect(ui->showTargets, &QCheckBox::stateChanged, [=]() {sendVectors();});
-    //connect(ui->showRolls, &QCheckBox::stateChanged, [=]() {sendVectors();});
 
     connect(ui->curvePositions, &QCheckBox::stateChanged, [=]() {sendCurves();});
     connect(ui->curveTargets, &QCheckBox::stateChanged, [=]() {sendCurves();});
@@ -107,57 +105,24 @@ CameraCinematic::CameraCinematic(QWidget *parent)
 
     connect(ui->dbcCameraList, &QComboBox::currentIndexChanged, [=]() {updateDBCInfo(false);});
 
-    connect(ui->clientPosition, &QPushButton::clicked, [=]() {
-        hProc.run();
-
-        if (!hProc.getError().isEmpty())
-        {
-            ui->output->setText(hProc.getError());
-            return;
-        }
-
-        int row = ui->rowList->currentIndex();
-        int vec = ui->vectorList->currentIndex();
-
-        for (int n = 1; n < 4; ++n)
-        {
-            QTableWidgetItem* item = new QTableWidgetItem();
-            item->setTextAlignment(Qt::AlignmentFlag::AlignCenter);
-            item->setText(QString::number(hProc.getCoord(n-1,
-                                                         facing, ui->applyOrientationClient->isChecked(),
-                                                         origin, ui->applyOffsetClient->isChecked())));
-
-            selectedTable->setItem(row, n + (vec * 3), item);
-        }
-
-        sendVectors();
-    });
+    connect(ui->clientPosition, &QPushButton::clicked, [=]() { getClientLocation(); });
     connect(ui->selectedPosition, &QPushButton::clicked, [=]() {createPointFromStoredPosition();});
 
     connect(ui->alignVector, &QPushButton::clicked, [=]() {alignVector();});
     connect(ui->normalizeSpeed, &QPushButton::clicked, [=]() {normalizeSpeed();});
     connect(ui->speedRatio, &QSlider::valueChanged, [=](int value) { ui->label_speedRatio->setText(QString::number((float)value/1000.0f)); });
     connect(ui->accelerationRatio, &QSlider::valueChanged, [=](int value) {
-        float percent = ui->accelerationPercent->value()/100.0f;
         ui->label_accelerationRatio->setText(QString("Ratio %1 ms/f").arg((float)value));
-        ui->label_accelerationRange->setText(QString("Range [%1; %2]")
-                                             .arg(QString::number((float)value*(1.0f+percent), 'g', 3),
-                                                  QString::number((float)value*(1.0f-percent), 'g', 3)));
-
         sendCurves();
     });
     connect(ui->accelerationPercent, &QSlider::valueChanged, [=](int value) {
-        float ratio = (float)ui->accelerationRatio->value();
         ui->label_accelerationPercent->setText(QString("Percent %1%").arg(value));
-        ui->label_accelerationRange->setText(QString("Range [%1; %2]")
-                                             .arg(QString::number(ratio*(1.0f+((float)value/100.0f)), 'g', 3),
-                                                  QString::number(ratio*(1.0f-((float)value/100.0f)), 'g', 3)));
         sendCurves();
     });
     connect(ui->accelerationPosition, &QCheckBox::stateChanged, [=]() {sendCurves();});
     connect(ui->accelerationTarget, &QCheckBox::stateChanged, [=]() {sendCurves();});
-
     updateDBC();
+    updateTableColor();
     updateRowList();
     updateVectorList();
 }
@@ -178,6 +143,36 @@ void CameraCinematic::updateCinematic()
         ui->viewTime->setEnabled(true);
         ui->viewTimeStart->setEnabled(true);
     }
+}
+
+void CameraCinematic::getClientLocation()
+{
+    hProc.run();
+
+    if (!hProc.getError().isEmpty())
+    {
+        ui->output->setText(hProc.getError());
+        return;
+    }
+
+    int row = ui->rowList->currentIndex();
+    int vec = ui->vectorList->currentIndex();
+
+    for (int n = 1; n < 4; ++n)
+    {
+        QTableWidgetItem* item = new QTableWidgetItem();
+        item->setTextAlignment(Qt::AlignmentFlag::AlignCenter);
+
+        float coord = hProc.getCoord(n-1, facing, origin,
+                                     ui->applyOrientationClient->isChecked(),
+                                     ui->applyOffsetClient->isChecked());
+
+        item->setText(QString::number(coord));
+
+        selectedTable->setItem(row, n + (vec * 3), item);
+    }
+
+    sendVectors();
 }
 
 void CameraCinematic::selectItem(int type, int row, int vec)
@@ -247,6 +242,7 @@ void CameraCinematic::openModelFile()
     camModel.setPath(path);
     camModel.read();
 
+    updateTableColor();
     updateRowList();
     sendVectors();
 }
@@ -268,6 +264,7 @@ void CameraCinematic::addRow()
         selectedTable->setItem(selectedTable->rowCount()-1, i, item);
     }
 
+    updateTableColor();
     updateRowList();
     sendVectors();
 }
@@ -297,6 +294,9 @@ void CameraCinematic::brushTime()
 
     if ( selectedTable == ui->pos_table ) lenght = ui->graphicsView->getLenghtPositions();
     else lenght = ui->graphicsView->getLenghtTargets();
+
+    if (lenght.isEmpty())
+        return;
 
     for (int row = 0; row < lenght.size(); ++row)
         total += lenght[row];
@@ -479,6 +479,40 @@ void CameraCinematic::generateFile()
     camModel.setInterpolation(interpolation);
     camModel.setAnimationLength(animationLength);
     camModel.run();
+}
+
+void CameraCinematic::updateTableColor()
+{
+    QColor posColor, tarColor;
+
+    QSettings setting("WOW-EDITOR", "CameraCinematic");
+    setting.beginGroup("COLOR-SETTINGS");
+    posColor = QColor(setting.value("pos-prim").toString());
+    tarColor = QColor(setting.value("tar-prim").toString());
+    setting.endGroup();
+
+    QFont font = ui->tab->tabBar()->font();
+    font.setPointSize(13);
+    font.setBold(true);
+    ui->tab->tabBar()->setFont(font);
+
+    ui->tab->tabBar()->setTabTextColor(0, posColor);
+    ui->tab->tabBar()->setTabTextColor(1, tarColor);
+
+    posColor.setAlphaF(.1f);
+    tarColor.setAlphaF(.1f);
+
+    for (int c = 0; c < 10; ++c)
+        for (int r = 0; r < ui->pos_table->rowCount(); ++r)
+            if ( r%2 != 0 )
+                if (QTableWidgetItem* i = ui->pos_table->item(r, c))
+                    i->setBackground(posColor);
+
+    for (int c = 0; c < 10; ++c)
+        for (int r = 0; r < ui->tar_table->rowCount(); ++r)
+            if ( r%2 != 0 )
+                if (QTableWidgetItem* i = ui->tar_table->item(r, c))
+                    i->setBackground(tarColor);
 }
 
 void CameraCinematic::skinFileDone()
@@ -929,7 +963,10 @@ void CameraCinematic::createFileMenu()
         settings = new Settings(this);
         settings->show();
 
-        connect(settings, &QDialog::finished, [=]() { sendVectors(); });
+        connect(settings, &QDialog::finished, [=]() {
+            updateTableColor();
+            sendVectors();
+        });
     });
 
     closeAct = new QAction(tr("Close"), this);

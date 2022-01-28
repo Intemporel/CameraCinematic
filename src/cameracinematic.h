@@ -56,6 +56,7 @@ private slots:
     void generateFile();
     /* End QTableWidget Option */
 
+    void updateTableColor();
     void updateModelInfo();
     void updateDBCInfo(bool check = true);
     void skinFileDone();
@@ -65,6 +66,7 @@ private slots:
     void alignVector();
     void normalizeSpeed();
     void updateCinematic();
+    void getClientLocation();
 
 private:
     Ui::CameraCinematic *ui;
