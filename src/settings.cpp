@@ -140,9 +140,10 @@ void Settings::showCurrentClientPosition(/*Process &hProc*/)
 
     if (hProc.getSuccess())
     {
-        ui->clientX->setText(QString("X : %1").arg(hProc.getCoord(0, 0, false, o, false)));
-        ui->clientY->setText(QString("Y : %1").arg(hProc.getCoord(1, 0, false, o, false)));
-        ui->clientZ->setText(QString("Z : %1").arg(hProc.getCoord(2, 0, false, o, false)));
+        ui->clientX->setText(QString("X : %1").arg(hProc.getCoord(0, 0, o, false, false)));
+        ui->clientY->setText(QString("Y : %1").arg(hProc.getCoord(1, 0, o, false, false)));
+        ui->clientZ->setText(QString("Z : %1").arg(hProc.getCoord(2, 0, o, false, false)));
+        ui->clientO->setText(QString("O : %1").arg(hProc.getPlayerOrientation()));
     }
 }
 
