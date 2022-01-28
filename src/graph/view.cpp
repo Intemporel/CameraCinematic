@@ -190,9 +190,22 @@ void View::mouseMoveEvent(QMouseEvent *event)
         targetScenePos = mapToScene(event->pos());
     }
 
-
     if ( pressed )
         translate(-delta.x()/(3/globalFactor), delta.y()/(2/globalFactor));
+
+    if (Vect2D *item = static_cast<Vect2D*>(scene->itemAt(mapToScene(event->pos()), transform())))
+    {
+        VectorType type = static_cast<VectorType>(item->getType());
+        VectorPos vec = static_cast<VectorPos>(item->getVec());
+
+        if ( type >= POSITION && type <= ROLL && vec >= POS_SELF && vec <= POS_OUT )
+        {
+            QString stdType = ( type == POSITION ) ? "Position" : ( type == TARGET ) ? "Target" : "Roll";
+            QString stdVec = QString("\nRow : %1;\nVector : %2").arg(item->getRow()).arg(item->getVec());
+
+            QToolTip::showText(event->globalPosition().toPoint(), stdType + stdVec, this, QRect(), 2500);
+        }
+    }
 
     QGraphicsView::mouseMoveEvent(event);
 }

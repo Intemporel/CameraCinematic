@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <QGraphicsView>
 #include <QMouseEvent>
+#include <QToolTip>
 
 class View : public QGraphicsView
 {
