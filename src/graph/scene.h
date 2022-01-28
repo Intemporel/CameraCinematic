@@ -96,9 +96,6 @@ private:
     int Axe1 = Coord::X;
     int Axe2 = Coord::Y;
 
-    //int lowSpeed[3] = {46, 134, 193};
-    //int highSpeed[3] = {192, 57, 43};
-
     float accRatio = 25.0f;
     int accPercent = 50;
     bool drawCurveOnTop = false;
