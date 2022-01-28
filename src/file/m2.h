@@ -49,6 +49,7 @@ public:
     void setRolls(std::vector<timestampedValue<VecF<3> > > r) { rolls = r; };
 
     QString getName() { return read_name; };
+    bool getIsRead() { return isRead; };
     std::uint16_t getInterpolation(int i) { return read_interpolation[i]; };
     std::uint32_t getAnimationLength() { return read_animationLength; };
     std::vector<timestampedValue<VecF<9>>> getPositions() { return positions; };

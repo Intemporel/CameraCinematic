@@ -22,13 +22,8 @@ void M2::run() // used for save / generate
         QString path;
 
         setting.beginGroup("WORK-SETTINGS");
-        path = setting.value("folder-path", "").toString();
+        path = setting.value("folder-path", QDir::currentPath()).toString();
         setting.endGroup();
-
-        if (path.isEmpty())
-        {
-            path = QDir::currentPath();
-        }
 
         name = path + "/" + name + ".m2";
     }
