@@ -6,7 +6,20 @@ void Skin::run()
         return;
 
     if (!path.isEmpty())
+    {
         name = path;
+    }
+    else
+    {
+        QSettings setting("WOW-EDITOR", "CameraCinematic");
+        QString path;
+
+        setting.beginGroup("WORK-SETTINGS");
+        path = setting.value("folder-path", QDir::currentPath()).toString();
+        setting.endGroup();
+
+        name = path + "/" + name + "00.skin";
+    }
 
     QFile file(name);
     if (file.open(QIODevice::ReadWrite))

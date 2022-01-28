@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QFile>
 #include <QThread>
+#include <QSettings>
 #include <QDataStream>
 
 class Skin : public QThread
@@ -14,7 +15,7 @@ public:
     virtual ~Skin() {};
     void run();
 
-    void setName(QString s) { name = QDir::currentPath() + "/" + s + "00.skin"; };
+    void setName(QString s) { name = s; };
     void setPath(QString p) { path = p; };
 
 signals:
