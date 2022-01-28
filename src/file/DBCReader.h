@@ -2,6 +2,7 @@
 #define DBCREADER_H
 
 #include <QDir>
+#include <QSettings>
 
 enum CinematicCameraStruct {
     ID,
@@ -26,7 +27,7 @@ public:
         if ( !dbcExist() )
             return;
 
-        dbc = fopen(path.toLocal8Bit().data(), "rb");
+        dbc = fopen(getPath().toLocal8Bit().data(), "rb");
 
         if ( dbc )
         {
@@ -43,7 +44,7 @@ public:
 
     void generateStringSort()
     {
-        dbc = fopen(path.toLocal8Bit().data(), "rb");
+        dbc = fopen(getPath().toLocal8Bit().data(), "rb");
 
         if ( dbc )
         {
@@ -82,7 +83,7 @@ public:
 
     void generateVectorByID()
     {
-        dbc = fopen(path.toLocal8Bit().data(), "rb");
+        dbc = fopen(getPath().toLocal8Bit().data(), "rb");
 
         if ( dbc )
         {
@@ -126,10 +127,20 @@ public:
         return true;
     }
 
+    QString getPath()
+    {
+        QString path;
+        QSettings setting("WOW-EDITOR", "CameraCinematic");
+        setting.beginGroup("DBC-SETTINGS");
+        path = setting.value("folder-path", QDir::currentPath()).toString();
+        setting.endGroup();
+
+        return path + "/" + dbc_name;
+    };
+
 private:
     FILE * dbc;
     QString dbc_name = "CinematicCamera.dbc";
-    QString path = (QDir::currentPath() + "/" + dbc_name);
     QList<std::uint32_t> string_sort;
     QMap<std::uint32_t, QString> stringByID;
     QVector<std::uint32_t> listID;
