@@ -9,6 +9,8 @@
 #include "file/m2.h"
 
 #include <QMainWindow>
+#include <QCloseEvent>
+#include <QMessageBox>
 #include <QTableWidget>
 #include <QIntValidator>
 #include <QGraphicsScene>
@@ -53,7 +55,7 @@ private slots:
     void removeRow();
     void brushTime();
     void moveRow(bool up);
-    void generateFile();
+    bool generateFile();
     /* End QTableWidget Option */
 
     void updateTableColor();
@@ -68,13 +70,33 @@ private slots:
     void updateCinematic();
     void getClientLocation();
 
+    bool callAutoSave(bool ignore = false);
+
+
+    void pushActionToArrayRedo(QVector<QString>);
+    void pushActionToArrayUndo(QVector<QString>);
+    void applyUndo();
+    void applyRedo();
+
 private:
     Ui::CameraCinematic *ui;
+    bool ignoreAutoSave = false;
     Settings* settings;
 
     QTableWidget* selectedTable;
     QString name;
     //QString modelPath;
+
+    const int MAX_UNDO = 10;
+    bool ignoreStack = false;
+    QVector<QVector<QString>> undoStack;
+    QVector<QVector<QString>> redoStack;
+    int undo_selector = -1;
+    int redo_selector = -1;
+
+    QString savePosItemText;
+    QString saveTarItemText;
+    QString saveRollItemText;
 
     float origin[3] = {0.0f,0.0f,0.0f};
     float facing = 0.0f;
@@ -101,6 +123,8 @@ private:
         return qSqrt(h1 + h2 + h3);
     };
 
+    void closeEvent(QCloseEvent *event);
+
     void sendVectors();
     void sendCurves();
     void updateDBC();
@@ -116,5 +140,13 @@ private:
     QAction *refreshDBCAct;
     QAction *settingsAct;
     QAction *closeAct;
+
+    /* Edit */
+    void createEditMenu();
+    QAction *undoAct;
+    QAction *redoAct;
+
+    /* ToolBar */
+    void createToolBar();
 };
 #endif // CAMERACINEMATIC_H

@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>CameraCinematic - Editor</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../ressources/rec.qrc">
+    <normaloff>:/icons/icons/video-camera.svg</normaloff>:/icons/icons/video-camera.svg</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="4" column="0">
@@ -1640,7 +1644,27 @@ in reference to current tab</string>
      <string>File</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
   </widget>
  </widget>
  <customwidgets>

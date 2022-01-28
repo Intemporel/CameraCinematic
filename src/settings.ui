@@ -28,6 +28,10 @@
   <property name="windowTitle">
    <string>CameraCinematic - Settings</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../ressources/rec.qrc">
+    <normaloff>:/icons/icons/video-camera.svg</normaloff>:/icons/icons/video-camera.svg</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="label_4">

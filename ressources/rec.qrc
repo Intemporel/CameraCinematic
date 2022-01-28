@@ -20,5 +20,7 @@
         <file>icons/position.svg</file>
         <file>icons/roll.svg</file>
         <file>icons/target.svg</file>
+        <file>icons/redo.svg</file>
+        <file>icons/undo.svg</file>
     </qresource>
 </RCC>

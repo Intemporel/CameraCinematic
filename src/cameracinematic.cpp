@@ -15,6 +15,8 @@ CameraCinematic::CameraCinematic(QWidget *parent)
     selectedTable = ui->pos_table;
 
     createFileMenu();
+    createEditMenu();
+    createToolBar();
 
     ui->label_speedRatio->setText(QString::number((float)ui->speedRatio->value()/1000.0f));
 
@@ -56,6 +58,60 @@ CameraCinematic::CameraCinematic(QWidget *parent)
     connect(ui->pos_table, &QTableWidget::itemSelectionChanged, [=]() {sendVectors();});
     connect(ui->tar_table, &QTableWidget::itemSelectionChanged, [=]() {sendVectors();});
     connect(ui->roll_table, &QTableWidget::itemSelectionChanged, [=]() {sendVectors();});
+
+    connect(ui->pos_table, &QTableWidget::itemDoubleClicked, [=](QTableWidgetItem* i) { savePosItemText = i->text(); });
+    connect(ui->pos_table, &QTableWidget::itemChanged, [=](QTableWidgetItem* i) {
+        if (ignoreStack)
+            return;
+
+        if (i->text() != savePosItemText)
+        {
+            QVector<QString> toPush;
+            toPush.push_back("1");
+            toPush.push_back("0");
+            toPush.push_back(QString::number(i->row()));
+            toPush.push_back(QString::number(i->column()));
+            toPush.push_back(savePosItemText);
+
+            pushActionToArrayUndo(toPush);
+        }
+    });
+
+    connect(ui->tar_table, &QTableWidget::itemDoubleClicked, [=](QTableWidgetItem* i) { saveTarItemText = i->text(); });
+    connect(ui->tar_table, &QTableWidget::itemChanged, [=](QTableWidgetItem* i) {
+        if (ignoreStack)
+            return;
+
+        if (i->text() != saveTarItemText)
+        {
+            QVector<QString> toPush;
+            toPush.push_back("1");
+            toPush.push_back("0");
+            toPush.push_back(QString::number(i->row()));
+            toPush.push_back(QString::number(i->column()));
+            toPush.push_back(saveTarItemText);
+
+            pushActionToArrayUndo(toPush);
+        }
+    });
+
+    connect(ui->roll_table, &QTableWidget::itemDoubleClicked, [=](QTableWidgetItem* i) { saveRollItemText = i->text(); });
+    connect(ui->roll_table, &QTableWidget::itemChanged, [=](QTableWidgetItem* i) {
+        if (ignoreStack)
+            return;
+
+        if (i->text() != saveRollItemText)
+        {
+            QVector<QString> toPush;
+            toPush.push_back("1");
+            toPush.push_back("0");
+            toPush.push_back(QString::number(i->row()));
+            toPush.push_back(QString::number(i->column()));
+            toPush.push_back(saveRollItemText);
+
+            pushActionToArrayUndo(toPush);
+        }
+    });
 
     connect(ui->showPositions, &QCheckBox::stateChanged, [=]() {sendVectors();});
     connect(ui->showTargets, &QCheckBox::stateChanged, [=]() {sendVectors();});
@@ -121,6 +177,7 @@ CameraCinematic::CameraCinematic(QWidget *parent)
     });
     connect(ui->accelerationPosition, &QCheckBox::stateChanged, [=]() {sendCurves();});
     connect(ui->accelerationTarget, &QCheckBox::stateChanged, [=]() {sendCurves();});
+
     updateDBC();
     updateTableColor();
     updateRowList();
@@ -173,6 +230,236 @@ void CameraCinematic::getClientLocation()
     }
 
     sendVectors();
+}
+
+bool CameraCinematic::callAutoSave(bool ignore)
+{
+    if ( ui->pos_table->rowCount() == 0
+         && ui->tar_table->rowCount() == 0
+         && ui->roll_table->rowCount() == 0 )
+    {
+        return true;
+    }
+
+    ignoreAutoSave = ignore;
+
+    QMessageBox* autoSave = new QMessageBox(QMessageBox::Question, "CameraCinematic - AutoSave",
+                                            tr("Did you want to save your progress\nbefore close the application ?"),
+                                            QMessageBox::Yes | QMessageBox::No);
+    autoSave->setWindowFlags(Qt::WindowTitleHint | Qt::Dialog | Qt::WindowMaximizeButtonHint | Qt::CustomizeWindowHint);
+
+    switch(autoSave->exec())
+    {
+    case QMessageBox::Yes:
+        if (generateFile())
+            return true;
+
+        return false;
+        break;
+    case QMessageBox::No:
+        return true;
+        break;
+    }
+
+    return false;
+}
+
+void CameraCinematic::pushActionToArrayRedo(QVector<QString> toStore)
+{
+    /* toStore structure :
+     *
+     * countAction
+     * action_n
+     *
+     * action_ {
+     *     table, row, column, data
+     * }
+     */
+
+    // remove stack above
+    if (redo_selector >= 0)
+        for (int e = 0; e <= redo_selector; ++e)
+            redoStack.removeFirst();
+
+    // always return to top of stack
+    redo_selector = -1;
+    redoAct->setEnabled(true);
+
+    redoStack.push_front(toStore);
+
+    // max 10 undo action
+    if (redoStack.size() == MAX_UNDO+1)
+        redoStack.remove(MAX_UNDO);
+}
+
+void CameraCinematic::pushActionToArrayUndo(QVector<QString> toStore)
+{
+    /* toStore structure :
+     *
+     * countAction
+     * action_n
+     *
+     * action_ {
+     *     table, row, column, data
+     * }
+     */
+
+    // remove stack above
+    if (undo_selector >= 0)
+    {
+        for (int e = 0; e <= undo_selector; ++e)
+            undoStack.removeFirst();
+
+        redoStack.clear();
+    }
+
+    // always return to top of stack
+    undo_selector = -1;
+
+    undoStack.push_front(toStore);
+    undoAct->setEnabled(true);
+
+    // max 10 undo action
+    if (undoStack.size() == MAX_UNDO+1)
+        undoStack.remove(MAX_UNDO);
+}
+
+void CameraCinematic::applyUndo()
+{
+    undo_selector++;
+
+    if (undo_selector == undoStack.size())
+    {
+        undo_selector--;
+        return;
+    }
+
+    if (undo_selector == undoStack.size() - 1)
+        undoAct->setEnabled(false);
+
+    ignoreStack = true;
+
+    if (undo_selector >= 0 && undo_selector < undoStack.size() && !undoStack.isEmpty())
+    {
+        QVector<QString> toStore;
+        int cAct = undoStack[undo_selector][0].toUInt();
+        toStore.push_back(QString::number(cAct));
+
+        for (int action = 0; action < cAct; ++action)
+        {
+            int table = undoStack[undo_selector][action*4 + 1].toUInt();
+            int row = undoStack[undo_selector][action*4 + 2].toUInt();
+            int column = undoStack[undo_selector][action*4 + 3].toUInt();
+            toStore.push_back(QString::number(table));
+            toStore.push_back(QString::number(row));
+            toStore.push_back(QString::number(column));
+
+            QTableWidget* t;
+            switch (table)
+            {
+            case 0:
+                t = ui->pos_table;
+                break;
+            case 1:
+                t = ui->tar_table;
+                break;
+            case 2:
+                t = ui->roll_table;
+                break;
+            default:
+                return;
+                break;
+            }
+
+            if (QTableWidgetItem* i = t->item(row, column))
+            {
+                toStore.push_back(i->text());
+                i->setText(undoStack[undo_selector][action*4 + 4]);
+            }
+
+        }
+
+        pushActionToArrayRedo(toStore);
+        sendVectors();
+    }
+
+    ignoreStack = false;
+}
+
+void CameraCinematic::applyRedo()
+{
+    redo_selector++;
+
+    if (redo_selector == redoStack.size())
+    {
+        redo_selector--;
+        return;
+    }
+
+    if (redo_selector == redoStack.size() - 1)
+        redoAct->setEnabled(false);
+
+    undo_selector--;
+    undoAct->setEnabled(true);
+
+    if (undo_selector < -1)
+        undo_selector = -1;
+
+    ignoreStack = true;
+
+    if (redo_selector >= 0 && redo_selector < redoStack.size() && !redoStack.isEmpty())
+    {
+        int cAct = redoStack[redo_selector][0].toUInt();
+
+        for (int action = 0; action < cAct; ++action)
+        {
+            int table = redoStack[redo_selector][action*4 + 1].toUInt();
+            int row = redoStack[redo_selector][action*4 + 2].toUInt();
+            int column = redoStack[redo_selector][action*4 + 3].toUInt();
+
+            QTableWidget* t;
+            switch (table)
+            {
+            case 0:
+                t = ui->pos_table;
+                break;
+            case 1:
+                t = ui->tar_table;
+                break;
+            case 2:
+                t = ui->roll_table;
+                break;
+            default:
+                return;
+                break;
+            }
+
+            if (QTableWidgetItem* i = t->item(row, column))
+            {
+                i->setText(redoStack[redo_selector][action*4 + 4]);
+            }
+
+        }
+
+        sendVectors();
+    }
+
+    ignoreStack = false;
+}
+
+void CameraCinematic::closeEvent(QCloseEvent *event)
+{
+    if (ignoreAutoSave)
+        return;
+
+    if (callAutoSave())
+    {
+        event->accept();
+        return;
+    }
+
+    event->ignore();
+    return;
 }
 
 void CameraCinematic::selectItem(int type, int row, int vec)
@@ -245,6 +532,9 @@ void CameraCinematic::openModelFile()
     updateTableColor();
     updateRowList();
     sendVectors();
+
+    undoAct->setEnabled(false);
+    undoStack.clear();
 }
 
 /* Begin QTableWindget Option */
@@ -390,24 +680,19 @@ void CameraCinematic::updateDBCInfo(bool check)
                                     .arg(dbcValues[0]).arg(dbcValues[1]).arg(dbcValues[2]).arg(dbcValues[3]));
 }
 
-void CameraCinematic::generateFile()
+bool CameraCinematic::generateFile()
 {
-    bool error = false;
-
     if (name.isEmpty())
     {
-        error = true;
         ui->output->setText("Error: You must define a name");
+        return false;
     }
 
     if (animationLength == 0)
     {
-        error = true;
         ui->output->setText("Error: You must set an animation length");
+        return false;
     }
-
-    if ( error )
-        return;
 
     camSkin.setName(name);
     camSkin.run();
@@ -479,6 +764,8 @@ void CameraCinematic::generateFile()
     camModel.setInterpolation(interpolation);
     camModel.setAnimationLength(animationLength);
     camModel.run();
+
+    return true;
 }
 
 void CameraCinematic::updateTableColor()
@@ -945,10 +1232,13 @@ void CameraCinematic::createFileMenu()
 {
     newFileAct = new QAction(tr("New File"), ui->menuFile);
     newFileAct->setIcon(QIcon(":/icons/icons/file-add.svg"));
+    connect(newFileAct, &QAction::triggered, [=]() {
+        //QDialog
+    });
 
     openFileAct = new QAction(tr("Open File"), ui->menuFile);
     openFileAct->setIcon(QIcon(":/icons/icons/file.svg"));
-    connect(openFileAct, &QAction::triggered, [=]() {
+    connect(openFileAct, &QAction::triggered, [this]() {
         getFileInformation();
         openModelFile();
     });
@@ -970,7 +1260,10 @@ void CameraCinematic::createFileMenu()
 
     closeAct = new QAction(tr("Close"), this);
     closeAct->setIcon(QIcon(":/icons/icons/error.svg"));
-    connect(closeAct, &QAction::triggered, [this]() {close();});
+    connect(closeAct, &QAction::triggered, [this]() {
+        if (callAutoSave(true))
+            close();
+    });
 
     ui->menuFile->addAction(newFileAct);
     ui->menuFile->addAction(openFileAct);
@@ -978,4 +1271,36 @@ void CameraCinematic::createFileMenu()
     ui->menuFile->addAction(refreshDBCAct);
     ui->menuFile->addAction(settingsAct);
     ui->menuFile->addAction(closeAct);
+}
+
+void CameraCinematic::createEditMenu()
+{
+    undoAct = new QAction(tr("Undo"), ui->menuEdit);
+    undoAct->setIcon(QIcon(":/icons/icons/undo.svg"));
+    undoAct->setEnabled(false);
+    connect(undoAct, &QAction::triggered, [this]() {
+        applyUndo();
+    });
+
+    redoAct = new QAction(tr("Redo"), ui->menuEdit);
+    redoAct->setIcon(QIcon(":/icons/icons/redo.svg"));
+    redoAct->setEnabled(false);
+    connect(redoAct, &QAction::triggered, [this]() {
+        applyRedo();
+    });
+
+    ui->menuEdit->addAction(undoAct);
+    ui->menuEdit->addAction(redoAct);
+}
+
+void CameraCinematic::createToolBar()
+{
+    ui->toolBar->addAction(newFileAct);
+    ui->toolBar->addAction(openFileAct);
+    //ui->toolBar->addAction(generateAct):
+    ui->toolBar->addSeparator();
+    ui->toolBar->addAction(undoAct);
+    ui->toolBar->addAction(redoAct);
+    ui->toolBar->addSeparator();
+    ui->toolBar->addAction(closeAct);
 }
