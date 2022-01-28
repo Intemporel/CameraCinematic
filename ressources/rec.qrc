@@ -17,5 +17,8 @@
         <file>icons/cross-circle.svg</file>
         <file>icons/video-camera.svg</file>
         <file>icons/eye-dropper.svg</file>
+        <file>icons/position.svg</file>
+        <file>icons/roll.svg</file>
+        <file>icons/target.svg</file>
     </qresource>
 </RCC>
