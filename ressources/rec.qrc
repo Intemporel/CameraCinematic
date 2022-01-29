@@ -22,5 +22,6 @@
         <file>icons/target.svg</file>
         <file>icons/redo.svg</file>
         <file>icons/undo.svg</file>
+        <file>icons/discord.svg</file>
     </qresource>
 </RCC>

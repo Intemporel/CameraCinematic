@@ -205,6 +205,8 @@ void CameraCinematic::updateCinematic()
 void CameraCinematic::getClientLocation()
 {
     hProc.run();
+    QVector<QString> toUndo;
+    toUndo.push_back("3");
 
     if (!hProc.getError().isEmpty())
     {
@@ -215,20 +217,31 @@ void CameraCinematic::getClientLocation()
     int row = ui->rowList->currentIndex();
     int vec = ui->vectorList->currentIndex();
 
-    for (int n = 1; n < 4; ++n)
+    ignoreStack = true;
+    for (int n = 0; n < 3; ++n)
     {
+        int column = (n + 1) + (vec * 3);
         QTableWidgetItem* item = new QTableWidgetItem();
         item->setTextAlignment(Qt::AlignmentFlag::AlignCenter);
 
-        float coord = hProc.getCoord(n-1, facing, origin,
+        float coord = hProc.getCoord(n, facing, origin,
                                      ui->applyOrientationClient->isChecked(),
                                      ui->applyOffsetClient->isChecked());
 
+        /* Create undo stack */
+        toUndo.push_back(QString::number(ui->tab->currentIndex()));
+        toUndo.push_back(QString::number(row));
+        toUndo.push_back(QString::number(column));
+        toUndo.push_back(selectedTable->item(row, column)->text());
+        /* End undo stack */
+
         item->setText(QString::number(coord));
 
-        selectedTable->setItem(row, n + (vec * 3), item);
+        selectedTable->setItem(row, column, item);
     }
+    ignoreStack = false;
 
+    pushActionToArrayUndo(toUndo);
     sendVectors();
 }
 
@@ -311,6 +324,7 @@ void CameraCinematic::pushActionToArrayUndo(QVector<QString> toStore)
             undoStack.removeFirst();
 
         redoStack.clear();
+        redoAct->setEnabled(false);
     }
 
     // always return to top of stack
@@ -889,6 +903,9 @@ void CameraCinematic::alignVector()
     int vec = ui->vectorList->currentIndex();
     int mirror;
 
+    QVector<QString> toUndo;
+    toUndo.push_back("3");
+
     if ( vec == 0 ) vec = 1;
 
     mirror = ( vec == 1 ) ? 2 : 1;
@@ -916,9 +933,23 @@ void CameraCinematic::alignVector()
                                  self.y() + offset.y(),
                                  self.z() + offset.z());
 
+    ignoreStack = true;
     for (int i = 0 ; i < 3 ; ++i)
-        selectedTable->item(row, 1 + (3 * mirror) + i)->setText(QString::number(newVec[i]));
+    {
+        int column = 1 + (3 * mirror) + i;
 
+        /* Create undo stack */
+        toUndo.push_back(QString::number(ui->tab->currentIndex()));
+        toUndo.push_back(QString::number(row));
+        toUndo.push_back(QString::number(column));
+        toUndo.push_back(selectedTable->item(row, column)->text());
+        /* End undo stack*/
+
+        selectedTable->item(row, column)->setText(QString::number(newVec[i]));
+    }
+    ignoreStack = false;
+
+    pushActionToArrayUndo(toUndo);
     sendVectors();
 }
 
@@ -927,6 +958,9 @@ void CameraCinematic::normalizeSpeed()
     int row = ui->rowList->currentIndex();
     int vec = ui->vectorList->currentIndex();
     int mirror;
+
+    QVector<QString> toUndo;
+    toUndo.push_back("3");
 
     if ( vec == 0 ) vec = 1;
 
@@ -964,9 +998,23 @@ void CameraCinematic::normalizeSpeed()
                                  self.y() + offMir.y(),
                                  self.z() + offMir.z());
 
+    ignoreStack = true;
     for (int i = 0 ; i < 3 ; ++i)
-        selectedTable->item(row, 1 + (3 * mirror) + i)->setText(QString::number(newVec[i]));
+    {
+        int column = 1 + (3 * mirror) + i;
 
+        /* Create undo stack */
+        toUndo.push_back(QString::number(ui->tab->currentIndex()));
+        toUndo.push_back(QString::number(row));
+        toUndo.push_back(QString::number(column));
+        toUndo.push_back(selectedTable->item(row, column)->text());
+        /* End undo stack*/
+
+        selectedTable->item(row, column)->setText(QString::number(newVec[i]));
+    }
+    ignoreStack = false;
+
+    pushActionToArrayUndo(toUndo);
     sendVectors();
 }
 
@@ -1195,6 +1243,8 @@ void CameraCinematic::updateViewTime(int value)
 void CameraCinematic::createPointFromStoredPosition()
 {
     QVector3D pos;
+    QVector<QString> toUndo;
+    toUndo.push_back("2");
 
     if (ui->sceneX->text().remove("X : ") != "null")
         pos.setX(ui->sceneX->text().remove("X : ").toFloat());
@@ -1214,18 +1264,29 @@ void CameraCinematic::createPointFromStoredPosition()
     int row = ui->rowList->currentIndex();
     int vec = ui->vectorList->currentIndex();
 
-    for (int n = 1; n < 4; ++n)
+    ignoreStack = true;
+    for (int n = 0; n < 3; ++n)
     {
-        if (!isNull[n-1])
+        if (!isNull[n])
         {
             QTableWidgetItem* item = new QTableWidgetItem();
             item->setTextAlignment(Qt::AlignmentFlag::AlignCenter);
-            item->setText(QString::number(pos[n-1]));
+            item->setText(QString::number(pos[n]));
+            int column = (n + 1) + (vec * 3);
 
-            selectedTable->setItem(row, n + (vec * 3), item);
+            /* Create undo stack */
+            toUndo.push_back(QString::number(ui->tab->currentIndex()));
+            toUndo.push_back(QString::number(row));
+            toUndo.push_back(QString::number(column));
+            toUndo.push_back(selectedTable->item(row, column)->text());
+            /* End undo stack */
+
+            selectedTable->setItem(row, column, item);
         }
     }
+    ignoreStack = false;
 
+    pushActionToArrayUndo(toUndo);
     sendVectors();
 }
 

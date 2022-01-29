@@ -87,7 +87,7 @@ private:
     QString name;
     //QString modelPath;
 
-    const int MAX_UNDO = 10;
+    const int MAX_UNDO = 20;
     bool ignoreStack = false;
     QVector<QVector<QString>> undoStack;
     QVector<QVector<QString>> redoStack;
