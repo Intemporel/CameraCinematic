@@ -200,10 +200,15 @@ void View::mouseMoveEvent(QMouseEvent *event)
 
         if ( type >= POSITION && type <= ROLL && vec >= POS_SELF && vec <= POS_OUT )
         {
+            QString vectorName[3] = {"Self", "In", "Out"};
             QString stdType = ( type == POSITION ) ? "Position" : ( type == TARGET ) ? "Target" : "Roll";
-            QString stdVec = QString("\nRow : %1;\nVector : %2").arg(item->getRow()).arg(item->getVec());
+            QString stdRow = QString("\nRow : %1").arg(item->getRow()+1);//.arg(vectorName[item->getVec()]);
+            int vec = item->getVec();
+            if (vec < VectorPos::POS_SELF || vec > VectorPos::POS_OUT)
+                vec = 0;
+            QString stdVec = QString("\nVector : %1").arg(vectorName[vec]);
 
-            QToolTip::showText(event->globalPosition().toPoint(), stdType + stdVec, this, QRect(), 2500);
+            QToolTip::showText(event->globalPosition().toPoint(), stdType + stdRow + stdVec, this, QRect(), 2500);
         }
     }
 

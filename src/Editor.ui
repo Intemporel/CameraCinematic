@@ -330,7 +330,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <property name="iconSize">
            <size>
@@ -468,47 +468,47 @@
               </column>
               <column>
                <property name="text">
-                <string>Vec1 X</string>
+                <string>Self X</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec1 Y</string>
+                <string>Self Y</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec1 Z</string>
+                <string>Self Z</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec2 X</string>
+                <string>In X</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec2 Y</string>
+                <string>In Y</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec2 Z</string>
+                <string>In Z</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec3 X</string>
+                <string>Out X</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec3 Y</string>
+                <string>Out Y</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec3 Z</string>
+                <string>Out Z</string>
                </property>
               </column>
              </widget>
@@ -618,47 +618,47 @@
               </column>
               <column>
                <property name="text">
-                <string>Vec1 X</string>
+                <string>Self X</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec1 Y</string>
+                <string>Self Y</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec1 Z</string>
+                <string>Self Z</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec2 X</string>
+                <string>In X</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec2 Y</string>
+                <string>In Y</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec2 Z</string>
+                <string>In Z</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec3 X</string>
+                <string>Out X</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec3 Y</string>
+                <string>Out Y</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec3 Z</string>
+                <string>Out Z</string>
                </property>
               </column>
              </widget>
@@ -768,17 +768,17 @@
               </column>
               <column>
                <property name="text">
-                <string>Vec1 X</string>
+                <string>Self X</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec1 Y</string>
+                <string>Self Y</string>
                </property>
               </column>
               <column>
                <property name="text">
-                <string>Vec1 Z</string>
+                <string>Self Z</string>
                </property>
               </column>
              </widget>

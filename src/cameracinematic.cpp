@@ -1134,12 +1134,13 @@ void CameraCinematic::updateRowList()
 
 void CameraCinematic::updateVectorList()
 {
+    QString vectorName[3] = {"Self","In","Out"};
     ui->vectorList->clear();
     if ( ui->tab->currentIndex() < 2 )
         for (int n = 0; n < 3 ; ++n)
-            ui->vectorList->addItem(QString("Vec%1").arg(n+1));
+            ui->vectorList->addItem(vectorName[n]);
     else
-        ui->vectorList->addItem("Vec1");
+        ui->vectorList->addItem(vectorName[0]);
 }
 
 void CameraCinematic::updateViewTime(int value)
