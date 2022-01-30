@@ -75,6 +75,21 @@ void Settings::loadSettings()
         ui->editFolderPathWork->setText(setting->value("folder-path", "").toString());
     setting->endGroup();
 
+    setting->beginGroup("COLOR-SETTINGS");
+    if (!QColor(setting->value("pos-prim").toString()).isValid())
+        setting->setValue("pos-prim", defaultPosPrimary.name());
+    if (!QColor(setting->value("pos-sec").toString()).isValid())
+        setting->setValue("pos-sec", defaultPosSecondary.name());
+    if (!QColor(setting->value("tar-prim").toString()).isValid())
+        setting->setValue("tar-prim", defaultTarPrimary.name());
+    if (!QColor(setting->value("tar-sec").toString()).isValid())
+        setting->setValue("tar-sec", defaultTarSecondary.name());
+    if (!QColor(setting->value("high-speed").toString()).isValid())
+        setting->setValue("high-speed", defaultHighSpeed.name());
+    if (!QColor(setting->value("low-speed").toString()).isValid())
+        setting->setValue("low-speed", defaultLowSpeed.name());
+    setting->endGroup();
+
     updateBackgroundColorShow();
 }
 
