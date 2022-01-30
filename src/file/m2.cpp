@@ -12,9 +12,11 @@ void M2::run() // used for save / generate
     if (name.isEmpty())
         return;
 
+    QString file;
+
     if (isRead)
     {
-        name = path ;
+        file = path ;
     }
     else
     {
@@ -25,10 +27,10 @@ void M2::run() // used for save / generate
         path = setting.value("folder-path", QDir::currentPath()).toString();
         setting.endGroup();
 
-        name = path + "/" + name + ".m2";
+        file = path + "/" + name + ".m2";
     }
 
-    FILE * model = fopen(name.toLocal8Bit().data(), "wb+");
+    FILE * model = fopen(file.toLocal8Bit().data(), "wb+");
 
     writeHeader(model);
     writeAnimations(model);
@@ -37,6 +39,7 @@ void M2::run() // used for save / generate
 
     fclose(model);
 
+    updateRecentFile(file);
     emit runDone();
 }
 
@@ -165,6 +168,56 @@ void M2::writeCameras(FILE * model)
         write(model,roll_timestamps+sizeof(uint32_t)*i,rolls[i].stamp);
         write(model,roll_data+sizeof(VecF<3>)*i,rolls[i].data);
     }
+}
+
+void M2::updateRecentFile(QString file)
+{
+    QSettings setting("WOW-EDITOR", "CameraCinematic");
+    setting.beginGroup("recent-file");
+
+    int count = setting.value("count", 0).toUInt();
+
+    if (count <= 0)
+    {
+        setting.setValue("count", 1);
+        setting.setValue("0", file);
+    }
+    else
+    {
+        int found = -1;
+        QVector<QString> stored;
+
+        for (int i = 0; i < count; ++i)
+        {
+            stored.push_back(setting.value(QString::number(i)).toString());
+
+            // try to found if file already stored
+            if (file == stored.last() && found == -1)
+                found = i;
+        }
+
+        if (found == -1)
+        {
+            setting.setValue("count", count+1);
+            stored.push_front(file);
+
+            for (int i = 0; i < stored.size(); ++i)
+                setting.setValue(QString::number(i), stored[i]);
+
+            if ( count == 11 ) // max count = 10
+                setting.remove("10");
+        }
+        else
+        {
+            stored.remove(found);
+            stored.push_front(setting.value(QString::number(found)).toString());
+
+            for (int i = 0; i < stored.size(); ++i)
+                setting.setValue(QString::number(i), stored[i]);
+        }
+    }
+
+    setting.endGroup();
 }
 
 void M2::read()

@@ -85,6 +85,8 @@ private:
     std::uint32_t read_nVec[3];
     std::uint32_t read_animationLength;
     QString read_name;
+
+    void updateRecentFile(QString file);
 };
 
 #endif // M2_H

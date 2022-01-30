@@ -27,9 +27,12 @@ private:
     Ui::Menu *ui;
     Settings* settings;
 
-    void openModelFile();
+    void openModelFile(QString path = "");
     void checkSettings();
     void openSettings();
+
+    void generateRecentFile();
+    void updateRecentFile(QString file);
 };
 
 #endif // MENU_H
