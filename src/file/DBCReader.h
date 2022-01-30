@@ -24,12 +24,12 @@ public:
     virtual ~DBCReader() {};
 
     void getHeader() {
-        if ( !dbcExist() )
+        if (!dbcExist())
             return;
 
         dbc = fopen(getPath().toLocal8Bit().data(), "rb");
 
-        if ( dbc )
+        if (dbc)
         {
             fread(magic.data(), sizeof (std::uint32_t), 1, dbc);
             fread(&record_count, sizeof (std::uint32_t), 1, dbc);
@@ -39,6 +39,12 @@ public:
             fclose(dbc);
 
             BLOCK_VALUE_SIZE = ( record_count * record_size );
+
+            string_sort.clear();
+            stringByID.clear();
+            listID.clear();
+            stringByPos.clear();
+            vectorByID.clear();
         }
     }
 
@@ -46,8 +52,8 @@ public:
     {
         dbc = fopen(getPath().toLocal8Bit().data(), "rb");
 
-        if ( dbc )
-        {
+        if (dbc)
+        {            
             for (std::uint32_t i = 0; i < record_count; ++i)
             {
                 std::uint32_t id;
@@ -85,7 +91,7 @@ public:
     {
         dbc = fopen(getPath().toLocal8Bit().data(), "rb");
 
-        if ( dbc )
+        if (dbc)
         {
             for (std::uint32_t i = 0; i < record_count; ++i)
             {
@@ -120,11 +126,10 @@ public:
     QVector<float> getVectorByID(int id) { return vectorByID[id]; };
 
     bool dbcExist() {
-        QFile file(QDir::currentPath() + "/" + dbc_name);
-        if (!file.exists())
-            return false;
+        if (QFile(getPath()).exists())
+            return true;
 
-        return true;
+        return false;
     }
 
     QString getPath()

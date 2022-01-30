@@ -671,19 +671,28 @@ void CameraCinematic::updateModelInfo()
     updateDBCInfo();
 }
 
-void CameraCinematic::updateDBCInfo(bool check)
+void CameraCinematic::updateDBCInfo(bool tryToFoundName)
 {
     QVector<std::uint32_t> dbcList = dbcCinematicCamera.getListID();
+    int index = 0;
 
-    if ( check )
+    if (tryToFoundName)
+    {
         for (int i = 0; i < ui->dbcCameraList->count(); ++i)
+        {
             if ( ui->dbcCameraList->itemText(i).contains(name) )
+            {
                 ui->dbcCameraList->setCurrentIndex(i);
+                index = i;
+                break;
+            }
+        }
+    }
 
-    QVector<float> dbcValues = dbcCinematicCamera.getVectorByID(dbcList[ui->dbcCameraList->currentIndex()]);
-
-    if (dbcValues.isEmpty())
+    if (dbcList.isEmpty())
         return;
+
+    QVector<float> dbcValues = dbcCinematicCamera.getVectorByID(dbcList[index]);
 
     origin[0] = dbcValues[0];
     origin[1] = dbcValues[1];
@@ -1144,7 +1153,7 @@ void CameraCinematic::sendCurves()
 
 void CameraCinematic::updateDBC()
 {
-    if ( !dbcCinematicCamera.dbcExist() )
+    if (!dbcCinematicCamera.dbcExist())
     {
         ui->output->setText("Error: Can't found the DBC [CinematicCamera.dbc] in the application folder");
     }
@@ -1155,9 +1164,7 @@ void CameraCinematic::updateDBC()
         dbcCinematicCamera.generateVectorByID();
 
         ui->output->setText("DBC: CinematicCamera.dbc is correctly loaded");
-
         QVector<std::uint32_t> listRecord = dbcCinematicCamera.getListID();
-        refreshDBCAct->setEnabled(false);
 
         ui->dbcCameraList->clear();
         for (int i = 0; i < listRecord.size(); ++i)
@@ -1307,6 +1314,10 @@ void CameraCinematic::createFileMenu()
 
     refreshDBCAct = new QAction(tr("Refresh DBC"), ui->menuFile);
     refreshDBCAct->setIcon(QIcon(":/icons/icons/refresh.svg"));
+    connect(refreshDBCAct, &QAction::triggered, [=]() {
+        updateDBC();
+        updateDBCInfo();
+    });
 
     settingsAct = new QAction(tr("Settings"), this);
     settingsAct->setIcon(QIcon(":/icons/icons/settings.svg"));
