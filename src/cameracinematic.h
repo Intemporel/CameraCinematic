@@ -60,7 +60,7 @@ private slots:
 
     void updateTableColor();
     void updateModelInfo();
-    void updateDBCInfo(bool check = true);
+    void updateDBCInfo(bool tryToFoundName = true);
     void skinFileDone();
     void m2FileDone();
     void m2FileRead();
