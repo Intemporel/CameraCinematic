@@ -390,7 +390,6 @@ void CameraCinematic::applyUndo()
                 toStore.push_back(i->text());
                 i->setText(undoStack[undo_selector][action*4 + 4]);
             }
-
         }
 
         pushActionToArrayRedo(toStore);
@@ -452,7 +451,6 @@ void CameraCinematic::applyRedo()
             {
                 i->setText(redoStack[redo_selector][action*4 + 4]);
             }
-
         }
 
         sendVectors();
@@ -733,7 +731,6 @@ bool CameraCinematic::generateFile()
         {
             if (item->column() == 0) current.stamp = item->text().toUInt();
             else t[item->column()-1] = item->text().toFloat();
-
         }
 
         current.data = t;
