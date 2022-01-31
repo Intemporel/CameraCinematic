@@ -1299,7 +1299,26 @@ void CameraCinematic::createFileMenu()
     newFileAct = new QAction(tr("New File"), ui->menuFile);
     newFileAct->setIcon(QIcon(":/icons/icons/file-add.svg"));
     connect(newFileAct, &QAction::triggered, [=]() {
-        //QDialog
+        if (callAutoSave(true))
+        {
+            ui->editName->setText("");
+            ui->editAnimationLength->setText("");
+            ui->pos_interpolation->setCurrentIndex(0);
+            ui->tar_interpolation->setCurrentIndex(0);
+            ui->roll_interpolation->setCurrentIndex(0);
+
+            //updateModelInfo();
+            ui->graphicsView->clear();
+
+            ui->pos_table->setRowCount(0);
+            ui->tar_table->setRowCount(0);
+            ui->roll_table->setRowCount(0);
+
+            ui->tab->setCurrentIndex(0);
+
+            updateRowList();
+            updateVectorList();
+        }
     });
 
     openFileAct = new QAction(tr("Open File"), ui->menuFile);
@@ -1348,6 +1367,7 @@ void CameraCinematic::createEditMenu()
     undoAct = new QAction(tr("Undo"), ui->menuEdit);
     undoAct->setIcon(QIcon(":/icons/icons/undo.svg"));
     undoAct->setEnabled(false);
+    undoAct->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Z));
     connect(undoAct, &QAction::triggered, [this]() {
         applyUndo();
     });
@@ -1355,6 +1375,7 @@ void CameraCinematic::createEditMenu()
     redoAct = new QAction(tr("Redo"), ui->menuEdit);
     redoAct->setIcon(QIcon(":/icons/icons/redo.svg"));
     redoAct->setEnabled(false);
+    redoAct->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
     connect(redoAct, &QAction::triggered, [this]() {
         applyRedo();
     });
