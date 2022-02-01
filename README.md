@@ -11,7 +11,7 @@ This tool allow you to create / load / edit models used for create a cinematic i
  - You can select a point in the graph directly by **pointing it with your mouse**, or use **ComboBox control** *( bottom to table )*, ComboBox only **select point based on current tab** *( Positions, Targets or Rolls ).
 
 ### Align Vector
- - **Align Vector** allow you to align **Vector In/Out** symetrically to **Vector Self**, this button take selected Vector as base for the symetric, in case of it's **Vector Self** selected, the button take **Vector In** as base.  
+ - **Align Vector** allow you to align **Vector In/Out** symetrically to **Vector Self**, this button take selected Vector as base for the symetric, in case of it's **Vector Self** selected, the button take **Vector In** as base. This function don't affect **Vector In/Out** distance to **Vector Self**.  
 
 ![Align Vector](https://i.imgur.com/RJ7eMem.gif)
 
