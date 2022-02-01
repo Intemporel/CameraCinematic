@@ -25,12 +25,12 @@ This tool allow you to create / load / edit models used for create a cinematic i
   
 Here I define **High Speed** in **RED** and **Low Speed** in **BLUE**.  
   
-Has you can see on **out of curve** *(**IN** is where we from, and **OUT** is where we go)* there is a big deceleration not smooth, to fix that I grab the concerned point and I move it away from **Vector Self** until the acceleration look smooth, for more precision we can **increase the Ratio** and see if acceleration look always smooth event ration is highter.  
+As you can see on **out of curve** *(**IN** is where we from, and **OUT** is where we go)* there is a big deceleration not smooth, to fix that I grab the concerned point and I move it away from **Vector Self** until the acceleration look smooth, for more precision we can **increase the Ratio** and see if acceleration look always smooth event ratio is higher.  
   
  - **Move AWAY** from Vector Self for **increase** speed acceleration
  - **Move CLOSER** from Vector Self for **decrease** speed acceleration
   
-The stuttering effect during cinematic caused by speed acceleration only appairs on **Vector Self**, it's not needed to search deceleration/acceleration cut on all curve, but only on **Vector Self** *(point passing through the curve)*.  
+The stuttering effect during cinematic caused by speed acceleration only appears on **Vector Self**, it's not needed to search deceleration/acceleration cut on all curve, but only on **Vector Self** *(point passing through the curve)*.  
 Look at this on each Display, X/Y, X/Z and Y/Z, and never forget to **Align Vector** when you move some Vector **In** or **Out** for always be precise.  
 
 ![Acceleration](https://i.imgur.com/6S0niSu.gif)
