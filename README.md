@@ -20,6 +20,20 @@ This tool allow you to create / load / edit models used for create a cinematic i
 
 ![Normalize Speed](https://i.imgur.com/tpxC7bj.gif)
 
+### Acceleration
+ When you create your cinematic and play it for first time in game you maybe see *(event if curve look like smooth)* some stuttering effect, it's because you forget to take care about speed acceleration, in the gif below you can see how to display acceleration, and how to play with controller to precisely define where there are some cuts.  
+  
+Here I define **High Speed** in **RED** and **Low Speed** in **BLUE**.  
+  
+Has you can see on **out of curve** *(**IN** is where we from, and **OUT** is where we go)* there is a big deceleration not smooth, to fix that I grab the concerned point and I move it away from **Vector Self** until the acceleration look smooth, for more precision we can **increase the Ratio** and see if acceleration look always smooth event ration is highter.  
+  
+ - **Move AWAY** from Vector Self for **increase** speed acceleration
+ - **Move CLOSER** from Vector Self for **decrease** speed acceleration
+  
+The stuttering effect during cinematic caused by speed acceleration only appairs on **Vector Self**, it's not needed to search deceleration/acceleration cut on all curve, but only on **Vector Self** *(point passing through the curve)*.  
+
+![Acceleration](https://i.imgur.com/6S0niSu.gif)
+
 ## Warning
 Be prudent with `CinematicCamera.dbc`, the tool always work with `OriginFacing = 0`, you can load model with `OriginFacing != 0`, but can't use `Client GPS` to get position, because for now i can't calculate correctly offset using orientation.  
 You can't start a Cinematic inside a transport, like boat for exemple, because your client take transport's map as the map origin used by model, and it will corrupt all the Position/Target path used by camera.  
