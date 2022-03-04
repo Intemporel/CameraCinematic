@@ -1,4 +1,4 @@
-# CameraCinematic - [Discord](https://discord.gg/76fBj3Rb)
+# CameraCinematic - [Discord](https://discord.gg/97Y8p5RW)
 [![CodeFactor](https://www.codefactor.io/repository/github/intemporel/cameracinematic/badge/main)](https://www.codefactor.io/repository/github/intemporel/cameracinematic/overview/main)
 
 ## Introduction
